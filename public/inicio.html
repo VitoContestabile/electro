@@ -327,6 +327,13 @@
       box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
     }
 
+    .form-submit:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
     .form-switch {
       text-align: center;
       margin-top: 20px;
@@ -341,6 +348,23 @@
 
     .form-switch a:hover {
       text-decoration: underline;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     @keyframes fadeInUp {
@@ -490,14 +514,14 @@
       <h2>Iniciar Sesión</h2>
       <form onsubmit="handleLogin(event)">
         <div class="form-group">
-          <label for="loginEmail">Email</label>
-          <input type="email" id="loginEmail" required>
+          <label for="loginUsername">Usuario o Email</label>
+          <input type="text" id="loginUsername" required>
         </div>
         <div class="form-group">
           <label for="loginPassword">Contraseña</label>
           <input type="password" id="loginPassword" required>
         </div>
-        <button type="submit" class="form-submit">Iniciar Sesión</button>
+        <button type="submit" class="form-submit" id="loginBtn">Iniciar Sesión</button>
       </form>
       <div class="form-switch">
         ¿No tienes cuenta? <a href="#" onclick="switchModal('login', 'signup')">Regístrate aquí</a>
@@ -512,8 +536,8 @@
       <h2>Crear Cuenta</h2>
       <form onsubmit="handleSignup(event)">
         <div class="form-group">
-          <label for="signupName">Nombre Completo</label>
-          <input type="text" id="signupName" required>
+          <label for="signupUsername">Nombre de Usuario</label>
+          <input type="text" id="signupUsername" required>
         </div>
         <div class="form-group">
           <label for="signupEmail">Email</label>
@@ -521,13 +545,13 @@
         </div>
         <div class="form-group">
           <label for="signupPassword">Contraseña</label>
-          <input type="password" id="signupPassword" required>
+          <input type="password" id="signupPassword" required minlength="6">
         </div>
         <div class="form-group">
           <label for="signupConfirm">Confirmar Contraseña</label>
           <input type="password" id="signupConfirm" required>
         </div>
-        <button type="submit" class="form-submit">Crear Cuenta</button>
+        <button type="submit" class="form-submit" id="signupBtn">Crear Cuenta</button>
       </form>
       <div class="form-switch">
         ¿Ya tienes cuenta? <a href="#" onclick="switchModal('signup', 'login')">Inicia sesión aquí</a>
@@ -536,6 +560,9 @@
   </div>
 
   <script>
+    // Configuración de la API
+    const API_BASE_URL = window.location.origin;
+
     // Modal Functions
     function openModal(type) {
       document.getElementById(type + 'Modal').style.display = 'block';
@@ -557,24 +584,66 @@
       }
     }
 
-    // Form Handlers
-    function handleLogin(event) {
-      event.preventDefault();
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-
-      // Simulación de login
-      showNotification('¡Bienvenido de vuelta! Iniciando sesión...', 'success');
-      setTimeout(() => {
-        closeModal('login');
-        // Aquí redirigiría al dashboard
-        window.location.href = '#dashboard';
-      }, 2000);
+    // Función para mostrar loading en botones
+    function setButtonLoading(buttonId, isLoading, originalText) {
+      const button = document.getElementById(buttonId);
+      if (isLoading) {
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner"></span>Procesando...';
+      } else {
+        button.disabled = false;
+        button.innerHTML = originalText;
+      }
     }
 
-    function handleSignup(event) {
+    // Form Handlers
+    async function handleLogin(event) {
       event.preventDefault();
-      const name = document.getElementById('signupName').value;
+
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      setButtonLoading('loginBtn', true, 'Iniciar Sesión');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Guardar token en localStorage
+          localStorage.setItem('authToken', data.data.token);
+          localStorage.setItem('userData', JSON.stringify(data.data.user));
+
+          showNotification('¡Bienvenido de vuelta! Iniciando sesión...', 'success');
+
+          setTimeout(() => {
+            window.location.href = 'menu.html';
+          }, 1500);
+        } else {
+          showNotification(data.message || 'Error al iniciar sesión', 'error');
+        }
+      } catch (error) {
+        console.error('Error en login:', error);
+        showNotification('Error de conexión. Verifica tu conexión a internet.', 'error');
+      } finally {
+        setButtonLoading('loginBtn', false, 'Iniciar Sesión');
+      }
+    }
+
+    async function handleSignup(event) {
+      event.preventDefault();
+
+      const username = document.getElementById('signupUsername').value;
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
       const confirm = document.getElementById('signupConfirm').value;
@@ -584,13 +653,42 @@
         return;
       }
 
-      // Simulación de registro
-      showNotification('¡Cuenta creada exitosamente! Bienvenido a SmartHome', 'success');
-      setTimeout(() => {
-        closeModal('signup');
-        // Aquí redirigiría al dashboard
-        window.location.href = '#dashboard';
-      }, 2000);
+      setButtonLoading('signupBtn', true, 'Crear Cuenta');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: username,
+            email: email,
+            password: password
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Guardar token en localStorage
+          localStorage.setItem('authToken', data.data.token);
+          localStorage.setItem('userData', JSON.stringify(data.data.user));
+
+          showNotification('¡Cuenta creada exitosamente! Bienvenido a SmartHome', 'success');
+
+          setTimeout(() => {
+            window.location.href = 'menu.html';
+          }, 1500);
+        } else {
+          showNotification(data.message || 'Error al crear la cuenta', 'error');
+        }
+      } catch (error) {
+        console.error('Error en registro:', error);
+        showNotification('Error de conexión. Verifica tu conexión a internet.', 'error');
+      } finally {
+        setButtonLoading('signupBtn', false, 'Crear Cuenta');
+      }
     }
 
     // Scroll to features
@@ -615,6 +713,8 @@
         z-index: 3000;
         font-weight: 600;
         animation: slideInRight 0.5s ease-out;
+        max-width: 300px;
+        word-wrap: break-word;
       `;
       notification.textContent = message;
 
@@ -623,7 +723,7 @@
       setTimeout(() => {
         notification.style.animation = 'slideOutRight 0.5s ease-in forwards';
         setTimeout(() => notification.remove(), 500);
-      }, 3000);
+      }, 4000);
     }
 
     // Additional animations
@@ -642,6 +742,33 @@
 
     // Smooth scrolling for navigation
     document.addEventListener('DOMContentLoaded', function() {
+      // Verificar si ya está logueado
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        // Verificar si el token es válido
+        fetch(`${API_BASE_URL}/api/verify-token`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Token válido, redirigir al menu
+            window.location.href = 'menu.html';
+          } else {
+            // Token inválido, limpiar localStorage
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userData');
+          }
+        })
+        .catch(error => {
+          console.error('Error verificando token:', error);
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userData');
+        });
+      }
+
       // Add scroll effect to header
       window.addEventListener('scroll', function() {
         const header = document.querySelector('header');
