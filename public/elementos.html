@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dispositivos del Living de Juan Pérez</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      padding: 20px 0;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .logo {
+      color: white;
+      font-size: 1.8rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      opacity: 0.8;
+    }
+
+    /* Main Content */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 120px 20px 80px;
+    }
+
+    .page-title {
+      color: white;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .user-info {
+      color: rgba(255, 255, 255, 0.9);
+      text-align: center;
+      margin-bottom: 50px;
+      font-size: 1.2rem;
+    }
+
+    /* Devices Grid */
+    .devices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .device-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .device-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    .device-icon {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+    }
+
+    .device-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #2c3e50;
+    }
+
+    .device-status {
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+
+    .status-on {
+      background: rgba(46, 204, 113, 0.2);
+      color: #27ae60;
+    }
+
+    .status-off {
+      background: rgba(231, 76, 60, 0.2);
+      color: #c0392b;
+    }
+
+    .device-controls {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .btn-control {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-on {
+      background: linear-gradient(45deg, #2ecc71, #27ae60);
+      color: white;
+    }
+
+    .btn-off {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      color: white;
+    }
+
+    .btn-control:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .btn-on:hover {
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+    }
+
+    .btn-off:hover {
+      box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      z-index: 3000;
+      display: none;
+    }
+
+    .notification-success {
+      background: linear-gradient(45deg, #2ecc71, #27ae60);
+    }
+
+    .notification-error {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-20px); }
+    }
+
+    @media (max-width: 768px) {
+      .page-title {
+        font-size: 2rem;
+      }
+
+      .devices-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .device-controls {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+  <nav>
+    <div class="logo">
+      🏠 SmartHome
+    </div>
+    <div class="nav-links">
+      <a href="inicio.html">Inicio</a>
+      <a href="#">Dispositivos</a>
+      <a href="#">Rutinas</a>
+      <a href="#">Consumo</a>
+      <a href="#">Perfil</a>
+    </div>
+  </nav>
+</header>
+
+<!-- Main Content -->
+<div class="main-content">
+  <h1 class="page-title">Dispositivos del Living</h1>
+  <p class="user-info">Usuario: Juan Pérez | Casa: Mi Hogar | Zona: Living</p>
+
+  <div class="devices-grid">
+    <!-- Microondas -->
+    <div class="device-card" id="microwave">
+      <div class="device-icon">🔥</div>
+      <h3 class="device-name">Microondas</h3>
+      <span class="device-status status-off">Apagado</span>
+      <div class="device-controls">
+        <button class="btn-control btn-on" onclick="toggleDevice('microwave', true)">Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('microwave', false)">Apagar</button>
+      </div>
+    </div>
+
+    <!-- Heladera -->
+    <div class="device-card" id="fridge">
+      <div class="device-icon">❄️</div>
+      <h3 class="device-name">Heladera</h3>
+      <span class="device-status status-on">Encendido</span>
+      <div class="device-controls">
+        <button class="btn-control btn-on" onclick="toggleDevice('fridge', true)">Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('fridge', false)">Apagar</button>
+      </div>
+    </div>
+
+    <!-- Ventilador -->
+    <div class="device-card" id="fan">
+      <div class="device-icon">💨</div>
+      <h3 class="device-name">Ventilador</h3>
+      <span class="device-status status-off">Apagado</span>
+      <div class="device-controls">
+        <button class="btn-control btn-on" onclick="toggleDevice('fan', true)">Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('fan', false)">Apagar</button>
+      </div>
+    </div>
+
+    <!-- Televisión -->
+    <div class="device-card" id="tv">
+      <div class="device-icon">📺</div>
+      <h3 class="device-name">Televisión</h3>
+      <span class="device-status status-off">Apagado</span>
+      <div class="device-controls">
+        <button class="btn-control btn-on" onclick="toggleDevice('tv', true)">Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('tv', false)">Apagar</button>
+      </div>
+    </div>
+
+    <!-- Estufa -->
+    <div class="device-card" id="heater">
+      <div class="device-icon">🔥</div>
+      <h3 class="device-name">Estufa</h3>
+      <span class="device-status status-off">Apagado</span>
+      <div class="device-controls">
+        <button class="btn-control btn-on" onclick="toggleDevice('heater', true)">Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('heater', false)">Apagar</button>
+      </div>
+    </div>
+
+    <!-- Lámparas -->
+    <div class="device-card" id="lights">
+      <div class="device-icon">💡</div>
+      <h3 class="device-name">Lámparas</h3>
+      <span class="device-status status-on">Encendido</span>
+      <div class="device-controls">
+        <button class="btn-control btn-on" onclick="toggleDevice('lights', true)">Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('lights', false)">Apagar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notification Element -->
+<div id="notification" class="notification"></div>
+
+<script>
+  // Toggle device state
+  function toggleDevice(deviceId, turnOn) {
+    const deviceCard = document.getElementById(deviceId);
+    const statusElement = deviceCard.querySelector('.device-status');
+
+    if (turnOn) {
+      statusElement.className = 'device-status status-on';
+      statusElement.textContent = 'Encendido';
+      showNotification(`${deviceCard.querySelector('.device-name').textContent} encendido correctamente`, 'success');
+    } else {
+      statusElement.className = 'device-status status-off';
+      statusElement.textContent = 'Apagado';
+      showNotification(`${deviceCard.querySelector('.device-name').textContent} apagado correctamente`, 'success');
+    }
+
+    // Aquí se podría agregar código para comunicarse con el backend
+    console.log(`Dispositivo ${deviceId} ${turnOn ? 'encendido' : 'apagado'}`);
+  }
+
+  // Show notification
+  function showNotification(message, type) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.className = `notification notification-${type}`;
+    notification.style.display = 'block';
+    notification.style.animation = 'fadeIn 0.5s forwards';
+
+    setTimeout(() => {
+      notification.style.animation = 'fadeOut 0.5s forwards';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 500);
+    }, 3000);
+  }
+
+  // Initialize device states from server (simulated)
+  document.addEventListener('DOMContentLoaded', function() {
+    // Simulación de estados iniciales - en un caso real, estos vendrían del servidor
+    const initialStates = {
+      'fridge': true,  // Heladera encendida por defecto
+      'lights': true   // Lámparas encendidas por defecto
+    };
+
+    // Aplicar estados iniciales
+    for (const [deviceId, isOn] of Object.entries(initialStates)) {
+      if (isOn) {
+        const deviceCard = document.getElementById(deviceId);
+        const statusElement = deviceCard.querySelector('.device-status');
+        statusElement.className = 'device-status status-on';
+        statusElement.textContent = 'Encendido';
+      }
+    }
+  });
+</script>
+</body>
+</html>
