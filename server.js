@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const PORT = 3000;
 
-// Configuración JWT
+// Configuración JWTa
 const JWT_SECRET = 'tu_clave_secreta_super_segura_cambiala_en_produccion';
 const JWT_EXPIRES_IN = '24h';
 
