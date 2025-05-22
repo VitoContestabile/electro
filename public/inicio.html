@@ -561,18 +561,30 @@
 
   <script>
     // Configuración de la API
-    const API_BASE_URL = window.location.origin;
+    // Detectar si estamos en localhost o en servidor remoto
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:3000'
+      : `http://${window.location.hostname}:3000`;
+
+    console.log('API Base URL:', API_BASE_URL);
 
     // Función para verificar que la API esté funcionando
     async function testApiConnection() {
       try {
+        console.log('Probando conexión a:', `${API_BASE_URL}/api/test-db`);
         const response = await fetch(`${API_BASE_URL}/api/test-db`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
         const data = await response.json();
         console.log('API Connection Test:', data);
+        showNotification('Conexión con servidor establecida ✅', 'success');
         return true;
       } catch (error) {
         console.error('API no disponible:', error);
-        showNotification('Error: No se puede conectar con el servidor', 'error');
+        showNotification(`Error conectando al servidor: ${error.message}`, 'error');
         return false;
       }
     }
