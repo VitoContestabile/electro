@@ -563,6 +563,20 @@
     // Configuración de la API
     const API_BASE_URL = window.location.origin;
 
+    // Función para verificar que la API esté funcionando
+    async function testApiConnection() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/test-db`);
+        const data = await response.json();
+        console.log('API Connection Test:', data);
+        return true;
+      } catch (error) {
+        console.error('API no disponible:', error);
+        showNotification('Error: No se puede conectar con el servidor', 'error');
+        return false;
+      }
+    }
+
     // Modal Functions
     function openModal(type) {
       document.getElementById(type + 'Modal').style.display = 'block';
@@ -606,6 +620,8 @@
       setButtonLoading('loginBtn', true, 'Iniciar Sesión');
 
       try {
+        console.log('Intentando login con:', { username, password: '***' });
+
         const response = await fetch(`${API_BASE_URL}/api/login`, {
           method: 'POST',
           headers: {
@@ -617,7 +633,15 @@
           })
         });
 
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
+        console.log('Login response:', data);
 
         if (data.success) {
           // Guardar token en localStorage
@@ -634,7 +658,11 @@
         }
       } catch (error) {
         console.error('Error en login:', error);
-        showNotification('Error de conexión. Verifica tu conexión a internet.', 'error');
+        if (error.message.includes('Unexpected token')) {
+          showNotification('Error del servidor: Las rutas de API no están configuradas correctamente', 'error');
+        } else {
+          showNotification('Error de conexión. Verifica que el servidor esté funcionando.', 'error');
+        }
       } finally {
         setButtonLoading('loginBtn', false, 'Iniciar Sesión');
       }
@@ -656,6 +684,8 @@
       setButtonLoading('signupBtn', true, 'Crear Cuenta');
 
       try {
+        console.log('Intentando registro con:', { username, email, password: '***' });
+
         const response = await fetch(`${API_BASE_URL}/api/register`, {
           method: 'POST',
           headers: {
@@ -668,7 +698,15 @@
           })
         });
 
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
+        console.log('Signup response:', data);
 
         if (data.success) {
           // Guardar token en localStorage
@@ -685,7 +723,11 @@
         }
       } catch (error) {
         console.error('Error en registro:', error);
-        showNotification('Error de conexión. Verifica tu conexión a internet.', 'error');
+        if (error.message.includes('Unexpected token')) {
+          showNotification('Error del servidor: Las rutas de API no están configuradas correctamente', 'error');
+        } else {
+          showNotification('Error de conexión. Verifica que el servidor esté funcionando.', 'error');
+        }
       } finally {
         setButtonLoading('signupBtn', false, 'Crear Cuenta');
       }
@@ -741,32 +783,42 @@
     document.head.appendChild(style);
 
     // Smooth scrolling for navigation
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
+
+      // Probar conexión con la API
+      console.log('Probando conexión con API...');
+      await testApiConnection();
+
       // Verificar si ya está logueado
       const token = localStorage.getItem('authToken');
       if (token) {
+        console.log('Token encontrado, verificando validez...');
         // Verificar si el token es válido
-        fetch(`${API_BASE_URL}/api/verify-token`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/verify-token`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+              console.log('Token válido, redirigiendo...');
+              window.location.href = 'menu.html';
+              return;
+            }
           }
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            // Token válido, redirigir al menu
-            window.location.href = 'menu.html';
-          } else {
-            // Token inválido, limpiar localStorage
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userData');
-          }
-        })
-        .catch(error => {
+
+          // Token inválido, limpiar localStorage
+          console.log('Token inválido, limpiando...');
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userData');
+        } catch (error) {
           console.error('Error verificando token:', error);
           localStorage.removeItem('authToken');
           localStorage.removeItem('userData');
-        });
+        }
       }
 
       // Add scroll effect to header
