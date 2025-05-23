@@ -94,18 +94,34 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      padding: 120px 20px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1558002038-1055907df827?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
+      opacity: 0.15;
+      z-index: -1;
     }
 
     .hero-content {
       max-width: 800px;
       animation: fadeInUp 1s ease-out;
+      text-align: center;
+      padding: 120px 20px 80px;
+      position: relative;
+      z-index: 2;
     }
 
     .hero h1 {
       color: white;
-      font-size: 4rem;
+      font-size: 4.5rem;
       margin-bottom: 20px;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
       line-height: 1.2;
@@ -113,9 +129,11 @@
 
     .hero-subtitle {
       color: rgba(255, 255, 255, 0.9);
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       margin-bottom: 40px;
       font-weight: 300;
+      max-width: 700px;
+      margin: 0 auto 40px;
     }
 
     .hero-buttons {
@@ -155,11 +173,66 @@
       border-color: rgba(255, 255, 255, 0.8);
     }
 
+    /* Floating Objects Animation */
+    .floating-objects {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .floating-object {
+      position: absolute;
+      opacity: 0.15;
+      animation: float 15s infinite ease-in-out;
+    }
+
+    .obj1 {
+      width: 150px;
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .obj2 {
+      width: 100px;
+      bottom: 15%;
+      right: 15%;
+      animation-delay: 2s;
+    }
+
+    .obj3 {
+      width: 80px;
+      top: 30%;
+      right: 10%;
+      animation-delay: 1s;
+    }
+
+    .obj4 {
+      width: 120px;
+      bottom: 25%;
+      left: 15%;
+      animation-delay: 3s;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-20px) rotate(5deg);
+      }
+    }
+
     /* Features Section */
     .features {
       background: rgba(255, 255, 255, 0.95);
-      padding: 80px 20px;
-      backdrop-filter: blur(10px);
+      padding: 100px 20px;
+      position: relative;
+      z-index: 2;
     }
 
     .container {
@@ -170,8 +243,18 @@
     .section-title {
       text-align: center;
       font-size: 2.5rem;
-      margin-bottom: 60px;
+      margin-bottom: 20px;
       color: #2c3e50;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-bottom: 60px;
+      color: #7f8c8d;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .features-grid {
@@ -187,6 +270,19 @@
       background: white;
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      border-radius: 5px 5px 0 0;
     }
 
     .feature-card:hover {
@@ -198,6 +294,9 @@
       font-size: 3rem;
       margin-bottom: 20px;
       display: block;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .feature-card h3 {
@@ -211,34 +310,355 @@
       line-height: 1.6;
     }
 
+    /* App Preview Section */
+    .app-preview {
+      padding: 100px 20px;
+      background: linear-gradient(135deg, #5b6ef5 0%, #a55eea 100%);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-preview::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1510511459019-5dda7724fd87?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
+      opacity: 0.1;
+      z-index: 0;
+    }
+
+    .app-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+    }
+
+    .app-text {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .app-text h2 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .app-text p {
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+
+    .app-image {
+      flex: 1;
+      min-width: 300px;
+      text-align: center;
+    }
+
+    .app-image img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      transform: perspective(1000px) rotateY(-15deg);
+      transition: all 0.5s ease;
+    }
+
+    .app-image img:hover {
+      transform: perspective(1000px) rotateY(0);
+    }
+
+    .features-list {
+      list-style: none;
+      margin-bottom: 30px;
+    }
+
+    .features-list li {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .features-list li::before {
+      content: '✓';
+      display: inline-block;
+      margin-right: 10px;
+      color: #feca57;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    /* Testimonials Section */
+    .testimonials {
+      background: white;
+      padding: 100px 20px;
+      position: relative;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-top: 60px;
+    }
+
+    .testimonial-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      position: relative;
+    }
+
+    .testimonial-card::before {
+      content: '"';
+      font-size: 6rem;
+      position: absolute;
+      top: -20px;
+      left: 20px;
+      color: rgba(102, 126, 234, 0.1);
+      font-family: Georgia, serif;
+    }
+
+    .testimonial-content {
+      position: relative;
+      z-index: 1;
+      color: #555;
+      line-height: 1.6;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .author-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 15px;
+      object-fit: cover;
+    }
+
+    .author-info h4 {
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+
+    .author-info p {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+
     /* Stats Section */
     .stats {
-      padding: 80px 20px;
+      padding: 100px 20px;
       text-align: center;
+      position: relative;
+      background: url('https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover fixed no-repeat;
+    }
+
+    .stats::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+      z-index: 1;
+    }
+
+    .stats .container {
+      position: relative;
+      z-index: 2;
+    }
+
+    .stats-title {
+      color: white;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .stats-subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 60px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 40px;
-      max-width: 800px;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
     .stat-item {
       color: white;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px 20px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+      transform: translateY(-10px);
+      background: rgba(255, 255, 255, 0.2);
     }
 
     .stat-number {
-      font-size: 3rem;
+      font-size: 3.5rem;
       font-weight: bold;
       margin-bottom: 10px;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      background: linear-gradient(45deg, #fff, #ffd6d6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .stat-label {
       font-size: 1.1rem;
       opacity: 0.9;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      padding: 100px 20px;
+      background: white;
+      text-align: center;
+    }
+
+    .cta-box {
+      max-width: 800px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 60px 40px;
+      border-radius: 20px;
+      color: white;
+      box-shadow: 0 20px 50px rgba(102, 126, 234, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1558002038-1055907df827?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
+      opacity: 0.1;
+      z-index: 0;
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-title {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .cta-text {
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      opacity: 0.9;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Footer */
+    footer {
+      background: #2c3e50;
+      color: white;
+      padding: 60px 20px 30px;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-column h3 {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      color: #feca57;
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: white;
+      padding-left: 5px;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .social-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+
+    .social-icon:hover {
+      background: #feca57;
+      transform: translateY(-5px);
+    }
+
+    .copyright {
+      text-align: center;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
     }
 
     /* Modal Styles */
@@ -368,34 +788,58 @@
     }
 
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes modalSlideIn {
-      from {
-        opacity: 0;
-        transform: translateY(-50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(-50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Floating Devices Animation */
+    .floating-devices {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .floating-device {
+      position: absolute;
+      opacity: 0.7;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+    }
+
+    .float1 {
+      width: 200px;
+      top: 15%;
+      right: 10%;
+      animation: floatDevice 10s infinite ease-in-out;
+    }
+
+    .float2 {
+      width: 180px;
+      bottom: 20%;
+      right: 15%;
+      animation: floatDevice 14s infinite ease-in-out 2s;
+    }
+
+    @keyframes floatDevice {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-30px) rotate(5deg); }
     }
 
     @media (max-width: 768px) {
       .hero h1 {
-        font-size: 2.5rem;
+        font-size: 3rem;
       }
 
       .hero-subtitle {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
       }
 
       .hero-buttons {
@@ -404,7 +848,6 @@
       }
 
       .nav-buttons {
-        flex-direction: column;
         gap: 10px;
       }
 
@@ -412,440 +855,485 @@
         padding: 10px 20px;
         font-size: 0.9rem;
       }
+
+      .floating-device {
+        width: 120px;
+      }
+
+      .app-content {
+        flex-direction: column;
+      }
+
+      .app-image img {
+        transform: none;
+        margin-top: 30px;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header>
-    <nav>
-      <div class="logo">
-        🏠 SmartHome
-      </div>
-      <div class="nav-buttons">
-        <button class="btn btn-login" onclick="openModal('login')">Iniciar Sesión</button>
-        <button class="btn btn-signup" onclick="openModal('signup')">Registrarse</button>
-      </div>
-    </nav>
-  </header>
-
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Tu Hogar<br>Inteligente</h1>
-      <p class="hero-subtitle">
-        Controla todos los dispositivos de tu casa desde cualquier lugar del mundo.
-        Tecnología avanzada para un estilo de vida más cómodo y eficiente.
-      </p>
-      <div class="hero-buttons">
-        <button class="btn btn-primary" onclick="openModal('signup')">Comenzar Gratis</button>
-        <button class="btn btn-secondary" onclick="scrollToFeatures()">Ver Características</button>
-      </div>
+<!-- Header -->
+<header>
+  <nav>
+    <div class="logo">
+      🏠 SmartHome
     </div>
-  </section>
-
-  <!-- Features Section -->
-  <section class="features" id="features">
-    <div class="container">
-      <h2 class="section-title">¿Por qué elegir SmartHome?</h2>
-      <div class="features-grid">
-        <div class="feature-card">
-          <span class="feature-icon">🔒</span>
-          <h3>Seguridad Total</h3>
-          <p>Monitoreo 24/7 con alertas en tiempo real. Cámaras inteligentes y sensores de movimiento para proteger tu hogar.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">⚡</span>
-          <h3>Ahorro Energético</h3>
-          <p>Optimiza el consumo eléctrico automáticamente. Ahorra hasta un 30% en tu factura de luz con nuestros algoritmos inteligentes.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">📱</span>
-          <h3>Control Remoto</h3>
-          <p>Gestiona todos tus dispositivos desde tu smartphone. Compatible con iOS, Android y asistentes de voz.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">🌡️</span>
-          <h3>Clima Inteligente</h3>
-          <p>Temperatura perfecta en cada habitación. Climatización automática basada en tus rutinas y preferencias.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">💡</span>
-          <h3>Iluminación Adaptativa</h3>
-          <p>Luces que se ajustan automáticamente según la hora del día y tus actividades para máximo confort.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">🌿</span>
-          <h3>Jardín Automatizado</h3>
-          <p>Riego inteligente y cuidado de plantas. Sensores de humedad y clima para un jardín siempre perfecto.</p>
-        </div>
-      </div>
+    <div class="nav-buttons">
+      <button class="btn btn-login" id="open-login">Iniciar Sesión</button>
+      <button class="btn btn-signup" id="open-signup">Registrarse</button>
     </div>
-  </section>
+  </nav>
+</header>
 
-  <!-- Stats Section -->
-  <section class="stats">
-    <div class="container">
-      <div class="stats-grid">
-        <div class="stat-item">
-          <div class="stat-number">50K+</div>
-          <div class="stat-label">Hogares Conectados</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">1M+</div>
-          <div class="stat-label">Dispositivos Controlados</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">30%</div>
-          <div class="stat-label">Ahorro Energético</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">24/7</div>
-          <div class="stat-label">Soporte Técnico</div>
-        </div>
-      </div>
+<!-- Hero Section -->
+<section class="hero">
+  <div class="floating-objects">
+    <img src="https://cdn-icons-png.flaticon.com/512/2088/2088617.png" alt="Dispositivo" class="floating-object obj1">
+    <img src="https://cdn-icons-png.flaticon.com/512/3105/3105858.png" alt="Dispositivo" class="floating-object obj2">
+    <img src="https://cdn-icons-png.flaticon.com/512/3474/3474360.png" alt="Dispositivo" class="floating-object obj3">
+    <img src="https://cdn-icons-png.flaticon.com/512/3278/3278903.png" alt="Dispositivo" class="floating-object obj4">
+  </div>
+  <div class="hero-content">
+    <h1>Tu Hogar<br>Inteligente</h1>
+    <p class="hero-subtitle">
+      Convierte tu casa en un espacio inteligente, seguro y eficiente. Controla todos tus dispositivos con un solo toque desde cualquier lugar.
+    </p>
+    <div class="hero-buttons">
+      <a href="#features" class="btn btn-primary">Descubrir Funciones</a>
+      <button class="btn btn-secondary" id="hero-signup">Comenzar Ahora</button>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('login')">&times;</span>
-      <h2>Iniciar Sesión</h2>
-      <form onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label for="loginUsername">Usuario o Email</label>
-          <input type="text" id="loginUsername" required>
-        </div>
-        <div class="form-group">
-          <label for="loginPassword">Contraseña</label>
-          <input type="password" id="loginPassword" required>
-        </div>
-        <button type="submit" class="form-submit" id="loginBtn">Iniciar Sesión</button>
-      </form>
-      <div class="form-switch">
-        ¿No tienes cuenta? <a href="#" onclick="switchModal('login', 'signup')">Regístrate aquí</a>
+<!-- Features Section -->
+<section class="features" id="features">
+  <div class="container">
+    <h2 class="section-title">¿Por qué elegir SmartHome?</h2>
+    <p class="section-subtitle">Diseñamos cada aspecto de nuestra tecnología pensando en tu comodidad, seguridad y eficiencia energética.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">🔒</span>
+        <h3>Seguridad Total</h3>
+        <p>Monitoreo 24/7 con alertas en tiempo real. Cámaras inteligentes y sensores de movimiento para proteger tu hogar incluso cuando estás lejos.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">⚡</span>
+        <h3>Ahorro Energético</h3>
+        <p>Optimiza el consumo eléctrico automáticamente. Ahorra hasta un 30% en tu factura de luz con nuestros algoritmos inteligentes que aprenden tus hábitos.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📱</span>
+        <h3>Control Remoto</h3>
+        <p>Gestiona todos tus dispositivos desde tu smartphone. Compatible con iOS, Android y asistentes de voz como Alexa, Google Home y Siri.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🌡️</span>
+        <h3>Clima Inteligente</h3>
+        <p>Temperatura perfecta en cada habitación. Climatización automática basada en tus rutinas, preferencias y condiciones meteorológicas externas.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">💡</span>
+        <h3>Iluminación Adaptativa</h3>
+        <p>Luces que se ajustan automáticamente según la hora del día y tus actividades para máximo confort y eficiencia. Crea ambientes personalizados.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🌿</span>
+        <h3>Jardín Automatizado</h3>
+        <p>Riego inteligente y cuidado de plantas. Sensores de humedad y clima para un jardín siempre perfecto sin desperdiciar agua.</p>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- Signup Modal -->
-  <div id="signupModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('signup')">&times;</span>
-      <h2>Crear Cuenta</h2>
-      <form onsubmit="handleSignup(event)">
-        <div class="form-group">
-          <label for="signupUsername">Nombre de Usuario</label>
-          <input type="text" id="signupUsername" required>
-        </div>
-        <div class="form-group">
-          <label for="signupEmail">Email</label>
-          <input type="email" id="signupEmail" required>
-        </div>
-        <div class="form-group">
-          <label for="signupPassword">Contraseña</label>
-          <input type="password" id="signupPassword" required minlength="6">
-        </div>
-        <div class="form-group">
-          <label for="signupConfirm">Confirmar Contraseña</label>
-          <input type="password" id="signupConfirm" required>
-        </div>
-        <button type="submit" class="form-submit" id="signupBtn">Crear Cuenta</button>
-      </form>
-      <div class="form-switch">
-        ¿Ya tienes cuenta? <a href="#" onclick="switchModal('signup', 'login')">Inicia sesión aquí</a>
+<!-- App Preview Section -->
+<section class="app-preview">
+  <div class="container">
+    <div class="app-content">
+      <div class="app-text">
+        <h2>Control Total en tus Manos</h2>
+        <p>Nuestra aplicación intuitiva te permite gestionar todos los aspectos de tu hogar inteligente desde cualquier lugar. Supervisa y controla todos tus dispositivos con un solo toque.</p>
+
+        <ul class="features-list">
+          <li>Control de todos los dispositivos en tiempo real</li>
+          <li>Notificaciones instantáneas de seguridad</li>
+          <li>Programación y automatización personalizada</li>
+          <li>Monitoreo del consumo energético</li>
+          <li>Compatibilidad con todos los principales ecosistemas</li>
+        </ul>
+
+        <button class="btn btn-primary">Descargar App</button>
+      </div>
+
+      <div class="app-image">
+        <img src="https://i.ibb.co/3Tdn09B/smart-home-app.png" alt="SmartHome App">
       </div>
     </div>
   </div>
+</section>
 
-  <script>
-    // Configuración de la API
-    // Detectar si estamos en localhost o en servidor remoto
-    const API_BASE_URL = ''
+<!-- Testimonials Section -->
+<section class="testimonials">
+  <div class="container">
+    <h2 class="section-title">Lo que Dicen Nuestros Clientes</h2>
+    <p class="section-subtitle">Miles de hogares ya disfrutan de la comodidad y seguridad de SmartHome</p>
 
-    console.log('API Base URL:', API_BASE_URL);
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <p class="testimonial-content">Desde que instalé SmartHome, mi consumo energético ha bajado un 28%. La aplicación es increíblemente fácil de usar y el soporte técnico siempre está disponible.</p>
+        <div class="testimonial-author">
+          <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Carolina Méndez" class="author-avatar">
+          <div class="author-info">
+            <h4>Carolina Méndez</h4>
+            <p>Cliente desde 2022</p>
+          </div>
+        </div>
+      </div>
 
-    // Función para verificar que la API esté funcionando
-    async function testApiConnection() {
-      try {
-        console.log('Probando conexión a:', `${API_BASE_URL}/api/test-db`);
-        const response = await fetch(`${API_BASE_URL}/api/test-db`);
+      <div class="testimonial-card">
+        <p class="testimonial-content">La tranquilidad que me da poder monitorear mi casa cuando estoy de viaje no tiene precio. Las alertas de seguridad funcionan perfectamente y la integración con mi asistente de voz es impecable.</p>
+        <div class="testimonial-author">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Martín Rodríguez" class="author-avatar">
+          <div class="author-info">
+            <h4>Martín Rodríguez</h4>
+            <p>Cliente desde 2021</p>
+          </div>
+        </div>
+      </div>
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
+      <div class="testimonial-card">
+        <p class="testimonial-content">Instalamos SmartHome en nuestra oficina y ha transformado nuestra forma de trabajar. El control de temperatura e iluminación automático ha mejorado el ambiente laboral y reducido nuestros costos.</p>
+        <div class="testimonial-author">
+          <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Valeria Torres" class="author-avatar">
+          <div class="author-info">
+            <h4>Valeria Torres</h4>
+            <p>Cliente Empresarial</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        const data = await response.json();
-        console.log('API Connection Test:', data);
-        showNotification('Conexión con servidor establecida ✅', 'success');
-        return true;
-      } catch (error) {
-        console.error('API no disponible:', error);
-        showNotification(`Error conectando al servidor: ${error.message}`, 'error');
-        return false;
-      }
+<!-- Stats Section -->
+<section class="stats">
+  <div class="container">
+    <h2 class="stats-title">SmartHome en Números</h2>
+    <p class="stats-subtitle">Nuestra tecnología está transformando miles de hogares en todo el país</p>
+
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-number">50K+</div>
+        <div class="stat-label">Hogares Conectados</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">1M+</div>
+        <div class="stat-label">Dispositivos Controlados</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">30%</div>
+        <div class="stat-label">Ahorro Energético</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">24/7</div>
+        <div class="stat-label">Soporte Técnico</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="cta-box">
+    <div class="cta-content">
+      <h2 class="cta-title">Comienza Tu Experiencia Inteligente</h2>
+      <p class="cta-text">Transforma tu hogar en un espacio más seguro, eficiente y cómodo con SmartHome. Instalación rápida y soporte técnico permanente.</p>
+      <button class="btn btn-primary" id="cta-signup">Registrarse Gratis</button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>SmartHome</h3>
+        <p>Transformando hogares con tecnología inteligente desde 2020. Comprometidos con la eficiencia energética y la innovación.</p>
+        <div class="social-links">
+          <a href="#" class="social-icon">f</a>
+          <a href="#" class="social-icon">t</a>
+          <a href="#" class="social-icon">in</a>
+          <a href="#" class="social-icon">ig</a>
+        </div>
+      </div>
+
+      <div class="footer-column">
+        <h3>Productos</h3>
+        <ul class="footer-links">
+          <li><a href="#">Iluminación Inteligente</a></li>
+          <li><a href="#">Seguridad</a></li>
+          <li><a href="#">Control Climático</a></li>
+          <li><a href="#">Entretenimiento</a></li>
+          <li><a href="#">Jardín Inteligente</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3>Recursos</h3>
+        <ul class="footer-links">
+          <li><a href="#">Guías de Instalación</a></li>
+          <li><a href="#">Centro de Ayuda</a></li>
+          <li><a href="#">Compatibilidad</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Contacto</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3>Legal</h3>
+        <ul class="footer-links">
+          <li><a href="#">Términos de Servicio</a></li>
+          <li><a href="#">Política de Privacidad</a></li>
+          <li><a href="#">Garantía</a></li>
+          <li><a href="#">Cookies</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="copyright">
+      &copy; 2024 SmartHome. Todos los derechos reservados.
+    </div>
+  </div>
+</footer>
+
+<!-- Login Modal -->
+<div id="login-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-login">&times;</span>
+    <h2>Iniciar Sesión</h2>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="login-username">Usuario o Email</label>
+        <input type="text" id="login-username" required>
+      </div>
+      <div class="form-group">
+        <label for="login-password">Contraseña</label>
+        <input type="password" id="login-password" required>
+      </div>
+      <button type="submit" class="form-submit" id="login-submit">
+        <span id="login-spinner" class="spinner" style="display: none;"></span>
+        Iniciar Sesión
+      </button>
+      <p class="form-switch">¿No tienes cuenta? <a href="#" id="switch-to-signup">Registrarse</a></p>
+    </form>
+  </div>
+</div>
+
+<!-- Signup Modal -->
+<div id="signup-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-signup">&times;</span>
+    <h2>Crear Cuenta</h2>
+    <form id="signup-form">
+      <div class="form-group">
+        <label for="signup-username">Nombre de Usuario</label>
+        <input type="text" id="signup-username" required>
+      </div>
+      <div class="form-group">
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" required>
+      </div>
+      <div class="form-group">
+        <label for="signup-password">Contraseña</label>
+        <input type="password" id="signup-password" required>
+      </div>
+      <button type="submit" class="form-submit" id="signup-submit">
+        <span id="signup-spinner" class="spinner" style="display: none;"></span>
+        Crear Cuenta
+      </button>
+      <p class="form-switch">¿Ya tienes cuenta? <a href="#" id="switch-to-login">Iniciar Sesión</a></p>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Modal functionality
+  const loginModal = document.getElementById('login-modal');
+  const signupModal = document.getElementById('signup-modal');
+  const openLogin = document.getElementById('open-login');
+  const openSignup = document.getElementById('open-signup');
+  const closeLogin = document.getElementById('close-login');
+  const closeSignup = document.getElementById('close-signup');
+  const switchToSignup = document.getElementById('switch-to-signup');
+  const switchToLogin = document.getElementById('switch-to-login');
+  const heroSignup = document.getElementById('hero-signup');
+  const ctaSignup = document.getElementById('cta-signup');
+
+  // Open modals
+  openLogin.addEventListener('click', () => {
+    loginModal.style.display = 'block';
+  });
+
+  openSignup.addEventListener('click', () => {
+    signupModal.style.display = 'block';
+  });
+
+  heroSignup.addEventListener('click', () => {
+    signupModal.style.display = 'block';
+  });
+
+  ctaSignup.addEventListener('click', () => {
+    signupModal.style.display = 'block';
+  });
+
+  // Close modals
+  closeLogin.addEventListener('click', () => {
+    loginModal.style.display = 'none';
+  });
+
+  closeSignup.addEventListener('click', () => {
+    signupModal.style.display = 'none';
+  });
+
+  // Switch between modals
+  switchToSignup.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginModal.style.display = 'none';
+    signupModal.style.display = 'block';
+  });
+
+  switchToLogin.addEventListener('click', (e) => {
+    e.preventDefault();
+    signupModal.style.display = 'none';
+    loginModal.style.display = 'block';
+  });
+
+  // Close modal when clicking outside
+  window.addEventListener('click', (e) => {
+    if (e.target === loginModal) {
+      loginModal.style.display = 'none';
+    }
+    if (e.target === signupModal) {
+      signupModal.style.display = 'none';
+    }
+  });
+
+  // Form submission
+  const loginForm = document.getElementById('login-form');
+  const signupForm = document.getElementById('signup-form');
+  const loginSpinner = document.getElementById('login-spinner');
+  const signupSpinner = document.getElementById('signup-spinner');
+  const loginSubmit = document.getElementById('login-submit');
+  const signupSubmit = document.getElementById('signup-submit');
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+
+    // Validación básica
+    if (!username || !password) {
+      alert('Por favor completa todos los campos');
+      return;
     }
 
-    // Modal Functions
-    function openModal(type) {
-      document.getElementById(type + 'Modal').style.display = 'block';
-    }
+    // Mostrar spinner y deshabilitar botón
+    loginSpinner.style.display = 'inline-block';
+    loginSubmit.disabled = true;
 
-    function closeModal(type) {
-      document.getElementById(type + 'Modal').style.display = 'none';
-    }
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
 
-    function switchModal(from, to) {
-      closeModal(from);
-      openModal(to);
-    }
+      const data = await response.json();
 
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-      if (event.target.classList.contains('modal')) {
-        event.target.style.display = 'none';
-      }
-    }
+      if (data.success) {
+        // Guardar token y datos de usuario en localStorage
+        localStorage.setItem('authToken', data.data.token);
+        localStorage.setItem('userData', JSON.stringify(data.data.user));
 
-    // Función para mostrar loading en botones
-    function setButtonLoading(buttonId, isLoading, originalText) {
-      const button = document.getElementById(buttonId);
-      if (isLoading) {
-        button.disabled = true;
-        button.innerHTML = '<span class="spinner"></span>Procesando...';
+        // Redireccionar a página de elementos
+        window.location.href = 'elementos.html';
       } else {
-        button.disabled = false;
-        button.innerHTML = originalText;
+        alert(data.message || 'Error al iniciar sesión');
       }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error de conexión. Intenta nuevamente.');
+    } finally {
+      // Ocultar spinner y habilitar botón
+      loginSpinner.style.display = 'none';
+      loginSubmit.disabled = false;
+    }
+  });
+
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById('signup-username').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+
+    // Validación básica
+    if (!username || !email || !password) {
+      alert('Por favor completa todos los campos');
+      return;
     }
 
-    // Update the handleSignup function in inicio.html
-    async function handleSignup(event) {
-      event.preventDefault();
-
-      const username = document.getElementById('signupUsername').value;
-      const email = document.getElementById('signupEmail').value;
-      const password = document.getElementById('signupPassword').value;
-      const confirm = document.getElementById('signupConfirm').value;
-
-      if (password !== confirm) {
-        showNotification('Las contraseñas no coinciden', 'error');
-        return;
-      }
-
-      setButtonLoading('signupBtn', true, 'Crear Cuenta');
-
-      try {
-        console.log('Intentando registro con:', { username, email, password: '***' });
-
-        const response = await fetch(`${API_BASE_URL}/api/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: username,
-            email: email,
-            password: password
-          })
-        });
-
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Signup response:', data);
-
-        if (data.success) {
-          // No guardar token después del registro
-          // Solo mostrar notificación y redirigir al login
-          showNotification('¡Cuenta creada exitosamente! Por favor inicia sesión', 'success');
-
-          setTimeout(() => {
-            // Cerrar el modal de registro
-            closeModal('signup');
-            // Abrir el modal de login
-            openModal('login');
-            // Prellenar el campo de usuario con el nombre recién registrado
-            document.getElementById('loginUsername').value = username;
-          }, 1500);
-        } else {
-          showNotification(data.message || 'Error al crear la cuenta', 'error');
-        }
-      } catch (error) {
-        console.error('Error en registro:', error);
-        if (error.message.includes('Unexpected token')) {
-          showNotification('Error del servidor: Las rutas de API no están configuradas correctamente', 'error');
-        } else {
-          showNotification('Error de conexión. Verifica que el servidor esté funcionando.', 'error');
-        }
-      } finally {
-        setButtonLoading('signupBtn', false, 'Crear Cuenta');
-      }
+    if (password.length < 6) {
+      alert('La contraseña debe tener al menos 6 caracteres');
+      return;
     }
 
-    // Update the handleLogin function to redirect to elementos.html
-    async function handleLogin(event) {
-      event.preventDefault();
+    // Mostrar spinner y deshabilitar botón
+    signupSpinner.style.display = 'inline-block';
+    signupSubmit.disabled = true;
 
-      const username = document.getElementById('loginUsername').value;
-      const password = document.getElementById('loginPassword').value;
-
-      setButtonLoading('loginBtn', true, 'Iniciar Sesión');
-
-      try {
-        console.log('Intentando login con:', { username, password: '***' });
-
-        const response = await fetch(`${API_BASE_URL}/api/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: username,
-            password: password
-          })
-        });
-
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Login response:', data);
-
-        if (data.success) {
-          // Guardar token en localStorage
-          localStorage.setItem('authToken', data.data.token);
-          localStorage.setItem('userData', JSON.stringify(data.data.user));
-
-          showNotification('¡Bienvenido de vuelta! Iniciando sesión...', 'success');
-
-          setTimeout(() => {
-            // Redirigir a elementos.html en lugar de menu.html
-            window.location.href = 'elementos.html';
-          }, 1500);
-        } else {
-          showNotification(data.message || 'Error al iniciar sesión', 'error');
-        }
-      } catch (error) {
-        console.error('Error en login:', error);
-        if (error.message.includes('Unexpected token')) {
-          showNotification('Error del servidor: Las rutas de API no están configuradas correctamente', 'error');
-        } else {
-          showNotification('Error de conexión. Verifica que el servidor esté funcionando.', 'error');
-        }
-      } finally {
-        setButtonLoading('loginBtn', false, 'Iniciar Sesión');
-      }
-    }
-
-    // Scroll to features
-    function scrollToFeatures() {
-      document.getElementById('features').scrollIntoView({
-        behavior: 'smooth'
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, email, password })
       });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Guardar token y datos de usuario en localStorage
+        localStorage.setItem('authToken', data.data.token);
+        localStorage.setItem('userData', JSON.stringify(data.data.user));
+
+        // Redireccionar a página de elementos
+        window.location.href = 'elementos.html';
+      } else {
+        alert(data.message || 'Error al registrarse');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error de conexión. Intenta nuevamente.');
+    } finally {
+      // Ocultar spinner y habilitar botón
+      signupSpinner.style.display = 'none';
+      signupSubmit.disabled = false;
     }
+  });
 
-    // Notification system
-    function showNotification(message, type) {
-      const notification = document.createElement('div');
-      notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${type === 'success' ? 'linear-gradient(45deg, #2ecc71, #27ae60)' : 'linear-gradient(45deg, #e74c3c, #c0392b)'};
-        color: white;
-        padding: 15px 25px;
-        border-radius: 10px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        z-index: 3000;
-        font-weight: 600;
-        animation: slideInRight 0.5s ease-out;
-        max-width: 300px;
-        word-wrap: break-word;
-      `;
-      notification.textContent = message;
-
-      document.body.appendChild(notification);
-
-      setTimeout(() => {
-        notification.style.animation = 'slideOutRight 0.5s ease-in forwards';
-        setTimeout(() => notification.remove(), 500);
-      }, 4000);
+  // Comprobar si ya hay sesión al cargar
+  document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      // Si ya hay una sesión, redireccionar a elementos.html
+      window.location.href = 'elementos.html';
     }
-
-    // Additional animations
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes slideInRight {
-        from { opacity: 0; transform: translateX(100px); }
-        to { opacity: 1; transform: translateX(0); }
-      }
-      @keyframes slideOutRight {
-        from { opacity: 1; transform: translateX(0); }
-        to { opacity: 0; transform: translateX(100px); }
-      }
-    `;
-    document.head.appendChild(style);
-
-    // Smooth scrolling for navigation
-    document.addEventListener('DOMContentLoaded', async function() {
-
-      // Probar conexión con la API
-      console.log('Probando conexión con API...');
-      await testApiConnection();
-
-      // Verificar si ya está logueado
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        console.log('Token encontrado, verificando validez...');
-        // Verificar si el token es válido
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/verify-token`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.success) {
-              console.log('Token válido, redirigiendo...');
-              window.location.href = 'menu.html';
-              return;
-            }
-          }
-
-          // Token inválido, limpiar localStorage
-          console.log('Token inválido, limpiando...');
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('userData');
-        } catch (error) {
-          console.error('Error verificando token:', error);
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('userData');
-        }
-      }
-
-      // Add scroll effect to header
-      window.addEventListener('scroll', function() {
-        const header = document.querySelector('header');
-        if (window.scrollY > 100) {
-          header.style.background = 'rgba(255, 255, 255, 0.15)';
-        } else {
-          header.style.background = 'rgba(255, 255, 255, 0.1)';
-        }
-      });
-    });
-  </script>
+  });
+</script>
 </body>
 </html>
