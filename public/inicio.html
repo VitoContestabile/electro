@@ -378,6 +378,49 @@
       transform: perspective(1000px) rotateY(0);
     }
 
+    .social-media-links {
+      margin-top: 30px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .social-media-links h4 {
+      color: white;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+    }
+
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .social-icons .social-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .social-icons .social-icon:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .social-icons .social-icon img {
+      width: 20px;
+      height: 20px;
+    }
+
     .features-list {
       list-style: none;
       margin-bottom: 30px;
@@ -636,7 +679,7 @@
       margin-top: 20px;
     }
 
-    .social-icon {
+    .social-link {
       width: 40px;
       height: 40px;
       background: rgba(255, 255, 255, 0.1);
@@ -644,13 +687,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
       transition: all 0.3s ease;
     }
 
-    .social-icon:hover {
+    .social-link:hover {
       background: #feca57;
       transform: translateY(-5px);
+    }
+
+    .social-link img {
+      width: 20px;
+      height: 20px;
     }
 
     .copyright {
@@ -914,32 +961,32 @@
       <div class="feature-card">
         <span class="feature-icon">🔒</span>
         <h3>Seguridad Total</h3>
-        <p>Monitoreo 24/7 con alertas en tiempo real. Cámaras inteligentes y sensores de movimiento para proteger tu hogar incluso cuando estás lejos.</p>
+        <p>Monitorea tu hogar en tiempo real. Recibe alertas y visualiza las cámaras de seguridad desde cualquier lugar y en cualquier momento.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon">⚡</span>
-        <h3>Ahorro Energético</h3>
-        <p>Optimiza el consumo eléctrico automáticamente. Ahorra hasta un 30% en tu factura de luz con nuestros algoritmos inteligentes que aprenden tus hábitos.</p>
+        <span class="feature-icon">💡</span>
+        <h3>Control Inteligente</h3>
+        <p>Automatiza las luces, persianas, temperatura y más. Crea rutinas personalizadas para maximizar el confort y ahorro energético.</p>
       </div>
       <div class="feature-card">
         <span class="feature-icon">📱</span>
         <h3>Control Remoto</h3>
-        <p>Gestiona todos tus dispositivos desde tu smartphone. Compatible con iOS, Android y asistentes de voz como Alexa, Google Home y Siri.</p>
+        <p>Controla todos los dispositivos desde cualquier lugar con nuestra aplicación móvil intuitiva y fácil de usar.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon">🌡️</span>
-        <h3>Clima Inteligente</h3>
-        <p>Temperatura perfecta en cada habitación. Climatización automática basada en tus rutinas, preferencias y condiciones meteorológicas externas.</p>
+        <span class="feature-icon">💰</span>
+        <h3>Ahorro Energético</h3>
+        <p>Reduce tu consumo energético hasta un 30% con nuestra tecnología inteligente de optimización y monitoreo en tiempo real.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon">💡</span>
-        <h3>Iluminación Adaptativa</h3>
-        <p>Luces que se ajustan automáticamente según la hora del día y tus actividades para máximo confort y eficiencia. Crea ambientes personalizados.</p>
+        <span class="feature-icon">🔊</span>
+        <h3>Asistente de Voz</h3>
+        <p>Compatible con los principales asistentes de voz del mercado. Controla tu hogar con simples comandos de voz.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon">🌿</span>
-        <h3>Jardín Automatizado</h3>
-        <p>Riego inteligente y cuidado de plantas. Sensores de humedad y clima para un jardín siempre perfecto sin desperdiciar agua.</p>
+        <span class="feature-icon">⚡</span>
+        <h3>Instalación Sencilla</h3>
+        <p>Nuestros técnicos certificados realizan una instalación rápida y limpia, sin obras ni complicaciones.</p>
       </div>
     </div>
   </div>
@@ -951,21 +998,42 @@
     <div class="app-content">
       <div class="app-text">
         <h2>Control Total en tus Manos</h2>
-        <p>Nuestra aplicación intuitiva te permite gestionar todos los aspectos de tu hogar inteligente desde cualquier lugar. Supervisa y controla todos tus dispositivos con un solo toque.</p>
+        <p>Nuestra aplicación te permite gestionar todos los dispositivos de tu hogar inteligente desde cualquier lugar. Con una interfaz intuitiva y potentes funcionalidades, transformarás la manera en que interactúas con tu hogar.</p>
 
         <ul class="features-list">
-          <li>Control de todos los dispositivos en tiempo real</li>
-          <li>Notificaciones instantáneas de seguridad</li>
-          <li>Programación y automatización personalizada</li>
-          <li>Monitoreo del consumo energético</li>
-          <li>Compatibilidad con todos los principales ecosistemas</li>
+          <li>Control centralizado de todos tus dispositivos</li>
+          <li>Monitoreo en tiempo real de consumo energético</li>
+          <li>Alertas y notificaciones personalizables</li>
+          <li>Creación de rutinas automatizadas</li>
+          <li>Histórico de actividad y reportes detallados</li>
         </ul>
 
-        <button class="btn btn-primary">Descargar App</button>
+        <a href="#" class="btn btn-primary">Descargar App</a>
       </div>
 
       <div class="app-image">
-        <img src="https://i.ibb.co/3Tdn09B/smart-home-app.png" alt="SmartHome App">
+        <img src="https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="SmartHome App">
+
+        <div class="social-media-links">
+          <h4>Síguenos en redes sociales</h4>
+          <div class="social-icons">
+            <a href="https://instagram.com/smarthome" target="_blank" class="social-icon">
+              <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="Instagram">
+            </a>
+            <a href="https://facebook.com/smarthome" target="_blank" class="social-icon">
+              <img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook">
+            </a>
+            <a href="https://tiktok.com/@smarthome" target="_blank" class="social-icon">
+              <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" alt="TikTok">
+            </a>
+            <a href="https://twitter.com/smarthome" target="_blank" class="social-icon">
+              <img src="https://cdn-icons-png.flaticon.com/512/124/124021.png" alt="Twitter">
+            </a>
+            <a href="https://youtube.com/smarthome" target="_blank" class="social-icon">
+              <img src="https://cdn-icons-png.flaticon.com/512/174/174883.png" alt="YouTube">
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -979,34 +1047,40 @@
 
     <div class="testimonials-grid">
       <div class="testimonial-card">
-        <p class="testimonial-content">Desde que instalé SmartHome, mi consumo energético ha bajado un 28%. La aplicación es increíblemente fácil de usar y el soporte técnico siempre está disponible.</p>
-        <div class="testimonial-author">
-          <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Carolina Méndez" class="author-avatar">
-          <div class="author-info">
-            <h4>Carolina Méndez</h4>
-            <p>Cliente desde 2022</p>
-          </div>
+        <div class="testimonial-content">
+          "SmartHome ha transformado por completo mi casa. El ahorro energético es real y la comodidad de controlar todo desde el celular es increíble. Lo recomiendo 100%."
         </div>
-      </div>
-
-      <div class="testimonial-card">
-        <p class="testimonial-content">La tranquilidad que me da poder monitorear mi casa cuando estoy de viaje no tiene precio. Las alertas de seguridad funcionan perfectamente y la integración con mi asistente de voz es impecable.</p>
         <div class="testimonial-author">
-          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Martín Rodríguez" class="author-avatar">
+          <img src="https://randomuser.me/api/portraits/women/43.jpg" alt="María López" class="author-avatar">
           <div class="author-info">
-            <h4>Martín Rodríguez</h4>
+            <h4>María López</h4>
             <p>Cliente desde 2021</p>
           </div>
         </div>
       </div>
 
       <div class="testimonial-card">
-        <p class="testimonial-content">Instalamos SmartHome en nuestra oficina y ha transformado nuestra forma de trabajar. El control de temperatura e iluminación automático ha mejorado el ambiente laboral y reducido nuestros costos.</p>
+        <div class="testimonial-content">
+          "La instalación fue rápida y el sistema funciona perfectamente. La app es muy intuitiva y el soporte técnico siempre está disponible para cualquier consulta."
+        </div>
         <div class="testimonial-author">
-          <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Valeria Torres" class="author-avatar">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Carlos Rodríguez" class="author-avatar">
           <div class="author-info">
-            <h4>Valeria Torres</h4>
-            <p>Cliente Empresarial</p>
+            <h4>Carlos Rodríguez</h4>
+            <p>Cliente desde 2022</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          "Lo que más me gusta es la tranquilidad de poder monitorear mi casa cuando estoy de viaje. Las cámaras y sensores funcionan perfectamente y la app es muy estable."
+        </div>
+        <div class="testimonial-author">
+          <img src="https://randomuser.me/api/portraits/women/26.jpg" alt="Ana Martínez" class="author-avatar">
+          <div class="author-info">
+            <h4>Ana Martínez</h4>
+            <p>Cliente desde 2020</p>
           </div>
         </div>
       </div>
@@ -1060,10 +1134,21 @@
         <h3>SmartHome</h3>
         <p>Transformando hogares con tecnología inteligente desde 2020. Comprometidos con la eficiencia energética y la innovación.</p>
         <div class="social-links">
-          <a href="#" class="social-icon">f</a>
-          <a href="#" class="social-icon">t</a>
-          <a href="#" class="social-icon">in</a>
-          <a href="#" class="social-icon">ig</a>
+          <a href="https://instagram.com/smarthome" class="social-link" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="Instagram">
+          </a>
+          <a href="https://facebook.com/smarthome" class="social-link" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook">
+          </a>
+          <a href="https://tiktok.com/@smarthome" class="social-link" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" alt="TikTok">
+          </a>
+          <a href="https://twitter.com/smarthome" class="social-link" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/124/124021.png" alt="Twitter">
+          </a>
+          <a href="https://youtube.com/smarthome" class="social-link" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/174/174883.png" alt="YouTube">
+          </a>
         </div>
       </div>
 
@@ -1072,9 +1157,9 @@
         <ul class="footer-links">
           <li><a href="#">Iluminación Inteligente</a></li>
           <li><a href="#">Seguridad</a></li>
-          <li><a href="#">Control Climático</a></li>
+          <li><a href="#">Control de Clima</a></li>
+          <li><a href="#">Electrodomésticos Smart</a></li>
           <li><a href="#">Entretenimiento</a></li>
-          <li><a href="#">Jardín Inteligente</a></li>
         </ul>
       </div>
 
@@ -1083,25 +1168,26 @@
         <ul class="footer-links">
           <li><a href="#">Guías de Instalación</a></li>
           <li><a href="#">Centro de Ayuda</a></li>
-          <li><a href="#">Compatibilidad</a></li>
+          <li><a href="#">Soporte Técnico</a></li>
+          <li><a href="#">Preguntas Frecuentes</a></li>
           <li><a href="#">Blog</a></li>
-          <li><a href="#">Contacto</a></li>
         </ul>
       </div>
 
       <div class="footer-column">
-        <h3>Legal</h3>
+        <h3>Empresa</h3>
         <ul class="footer-links">
-          <li><a href="#">Términos de Servicio</a></li>
+          <li><a href="#">Sobre Nosotros</a></li>
+          <li><a href="#">Contacto</a></li>
+          <li><a href="#">Trabaja con Nosotros</a></li>
           <li><a href="#">Política de Privacidad</a></li>
-          <li><a href="#">Garantía</a></li>
-          <li><a href="#">Cookies</a></li>
+          <li><a href="#">Términos de Servicio</a></li>
         </ul>
       </div>
     </div>
 
     <div class="copyright">
-      &copy; 2024 SmartHome. Todos los derechos reservados.
+      &copy; 2023 SmartHome. Todos los derechos reservados. Diseñado con ❤️ para hogares inteligentes.
     </div>
   </div>
 </footer>
@@ -1113,7 +1199,7 @@
     <h2>Iniciar Sesión</h2>
     <form id="login-form">
       <div class="form-group">
-        <label for="login-username">Usuario o Email</label>
+        <label for="login-username">Usuario</label>
         <input type="text" id="login-username" required>
       </div>
       <div class="form-group">
@@ -1124,7 +1210,9 @@
         <span id="login-spinner" class="spinner" style="display: none;"></span>
         Iniciar Sesión
       </button>
-      <p class="form-switch">¿No tienes cuenta? <a href="#" id="switch-to-signup">Registrarse</a></p>
+      <div class="form-switch">
+        ¿No tienes cuenta? <a href="#" id="switch-to-signup">Registrarse</a>
+      </div>
     </form>
   </div>
 </div>
@@ -1136,7 +1224,7 @@
     <h2>Crear Cuenta</h2>
     <form id="signup-form">
       <div class="form-group">
-        <label for="signup-username">Nombre de Usuario</label>
+        <label for="signup-username">Usuario</label>
         <input type="text" id="signup-username" required>
       </div>
       <div class="form-group">
@@ -1151,7 +1239,9 @@
         <span id="signup-spinner" class="spinner" style="display: none;"></span>
         Crear Cuenta
       </button>
-      <p class="form-switch">¿Ya tienes cuenta? <a href="#" id="switch-to-login">Iniciar Sesión</a></p>
+      <div class="form-switch">
+        ¿Ya tienes cuenta? <a href="#" id="switch-to-login">Iniciar Sesión</a>
+      </div>
     </form>
   </div>
 </div>
@@ -1234,7 +1324,7 @@
 
     // Validación básica
     if (!username || !password) {
-      alert('Por favor completa todos los campos');
+      alert('Por favor complete todos los campos');
       return;
     }
 
@@ -1243,29 +1333,25 @@
     loginSubmit.disabled = true;
 
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, password })
-      });
+      // Simulación de login (reemplazar con API real)
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      const data = await response.json();
+      // Simulando datos de usuario y token
+      const userData = {
+        username: username,
+        email: `${username}@ejemplo.com`,
+        id: '123456'
+      };
 
-      if (data.success) {
-        // Guardar token y datos de usuario en localStorage
-        localStorage.setItem('authToken', data.data.token);
-        localStorage.setItem('userData', JSON.stringify(data.data.user));
+      // Guardar datos en localStorage
+      localStorage.setItem('authToken', 'token-simulado-1234567890');
+      localStorage.setItem('userData', JSON.stringify(userData));
 
-        // Redireccionar a página de elementos
-        window.location.href = 'elementos.html';
-      } else {
-        alert(data.message || 'Error al iniciar sesión');
-      }
+      // Redireccionar a dashboard
+      window.location.href = 'elementos.html';
     } catch (error) {
-      console.error('Error:', error);
-      alert('Error de conexión. Intenta nuevamente.');
+      alert('Error al iniciar sesión. Intente nuevamente.');
+      console.error(error);
     } finally {
       // Ocultar spinner y habilitar botón
       loginSpinner.style.display = 'none';
@@ -1282,7 +1368,7 @@
 
     // Validación básica
     if (!username || !email || !password) {
-      alert('Por favor completa todos los campos');
+      alert('Por favor complete todos los campos');
       return;
     }
 
@@ -1296,29 +1382,25 @@
     signupSubmit.disabled = true;
 
     try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, email, password })
-      });
+      // Simulación de registro (reemplazar con API real)
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      const data = await response.json();
+      // Simulando datos de usuario y token
+      const userData = {
+        username: username,
+        email: email,
+        id: '123456'
+      };
 
-      if (data.success) {
-        // Guardar token y datos de usuario en localStorage
-        localStorage.setItem('authToken', data.data.token);
-        localStorage.setItem('userData', JSON.stringify(data.data.user));
+      // Guardar datos en localStorage
+      localStorage.setItem('authToken', 'token-simulado-1234567890');
+      localStorage.setItem('userData', JSON.stringify(userData));
 
-        // Redireccionar a página de elementos
-        window.location.href = 'elementos.html';
-      } else {
-        alert(data.message || 'Error al registrarse');
-      }
+      // Redireccionar a dashboard
+      window.location.href = 'elementos.html';
     } catch (error) {
-      console.error('Error:', error);
-      alert('Error de conexión. Intenta nuevamente.');
+      alert('Error al registrarse. Intente nuevamente.');
+      console.error(error);
     } finally {
       // Ocultar spinner y habilitar botón
       signupSpinner.style.display = 'none';
@@ -1330,8 +1412,18 @@
   document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('authToken');
     if (token) {
-      // Si ya hay una sesión, redireccionar a elementos.html
-      window.location.href = 'elementos.html';
+      // Si hay token, ocultar botones de login/registro y mostrar botón de dashboard
+      document.querySelector('.nav-buttons').innerHTML = `
+          <a href="elementos.html" class="btn btn-login">Mi Dashboard</a>
+          <button class="btn btn-signup" id="logout-btn">Cerrar Sesión</button>
+        `;
+
+      // Agregar evento de logout
+      document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        window.location.reload();
+      });
     }
   });
 </script>
