@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dispositivos del Living de Juan Pérez</title>
+  <title>Dispositivos del Living</title>
   <style>
     * {
       margin: 0;
@@ -13,7 +13,7 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
       min-height: 100vh;
       color: #333;
       overflow-x: hidden;
@@ -26,9 +26,9 @@
       top: 0;
       width: 100%;
       z-index: 1000;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.25);
       backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     nav {
@@ -67,9 +67,9 @@
     }
 
     .btn-logout {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(231, 76, 60, 0.2);
       color: white;
-      border: 2px solid rgba(255, 255, 255, 0.5);
+      border: 2px solid rgba(231, 76, 60, 0.5);
       padding: 8px 16px;
       border-radius: 20px;
       cursor: pointer;
@@ -78,8 +78,8 @@
     }
 
     .btn-logout:hover {
-      background: rgba(255, 255, 255, 0.3);
-      border-color: rgba(255, 255, 255, 0.8);
+      background: rgba(231, 76, 60, 0.4);
+      border-color: rgba(231, 76, 60, 0.8);
     }
 
     /* Main Content */
@@ -92,7 +92,7 @@
     .page-title {
       color: white;
       font-size: 2.5rem;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       text-align: center;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
@@ -102,6 +102,37 @@
       text-align: center;
       margin-bottom: 50px;
       font-size: 1.2rem;
+    }
+
+    /* Room View */
+    .room-view {
+      position: relative;
+      background: url('https://images.unsplash.com/photo-1600210492493-0946911123ea?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
+      height: 300px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .room-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      padding: 20px;
+      border-radius: 0 0 20px 20px;
+      color: white;
+    }
+
+    .room-name {
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+    }
+
+    .room-status {
+      font-size: 1rem;
+      opacity: 0.8;
     }
 
     /* Devices Grid */
@@ -128,7 +159,9 @@
     }
 
     .device-icon {
-      font-size: 3.5rem;
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
       margin-bottom: 20px;
     }
 
@@ -217,6 +250,33 @@
       background: linear-gradient(45deg, #e74c3c, #c0392b);
     }
 
+    /* Quick Stats */
+    .quick-stats {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-box {
+      text-align: center;
+      color: white;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -239,6 +299,11 @@
       .device-controls {
         flex-direction: column;
       }
+
+      .quick-stats {
+        flex-direction: column;
+        gap: 20px;
+      }
     }
   </style>
 </head>
@@ -250,6 +315,7 @@
       🏠 SmartHome
     </div>
     <div class="nav-links">
+      <a href="#">Dashboard</a>
       <a href="#">Consumo</a>
       <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
     </div>
@@ -258,13 +324,41 @@
 
 <!-- Main Content -->
 <div class="main-content">
-  <h1 class="page-title">Dispositivos del Living</h1>
-  <p class="user-info" id="user-info">Usuario: Juan Pérez | Casa: Mi Hogar | Zona: Living</p>
+  <h1 class="page-title">Bienvenido a tu Hogar Inteligente</h1>
+  <p class="user-info" id="user-info">Cargando información del usuario...</p>
+
+  <!-- Room View -->
+  <div class="room-view">
+    <div class="room-overlay">
+      <h2 class="room-name">Living</h2>
+      <p class="room-status">2 dispositivos activos</p>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="quick-stats">
+    <div class="stat-box">
+      <div class="stat-value">23°C</div>
+      <div class="stat-label">Temperatura</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">45%</div>
+      <div class="stat-label">Humedad</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">850W</div>
+      <div class="stat-label">Consumo Actual</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">6</div>
+      <div class="stat-label">Dispositivos Totales</div>
+    </div>
+  </div>
 
   <div class="devices-grid">
     <!-- Microondas -->
     <div class="device-card" id="microwave">
-      <div class="device-icon">🔥</div>
+      <img src="https://cdn-icons-png.flaticon.com/512/1046/1046874.png" alt="Microondas" class="device-icon">
       <h3 class="device-name">Microondas</h3>
       <span class="device-status status-off">Apagado</span>
       <div class="device-controls">
@@ -275,7 +369,7 @@
 
     <!-- Heladera -->
     <div class="device-card" id="fridge">
-      <div class="device-icon">❄️</div>
+      <img src="https://cdn-icons-png.flaticon.com/512/2272/2272033.png" alt="Heladera" class="device-icon">
       <h3 class="device-name">Heladera</h3>
       <span class="device-status status-on">Encendido</span>
       <div class="device-controls">
@@ -286,7 +380,7 @@
 
     <!-- Ventilador -->
     <div class="device-card" id="fan">
-      <div class="device-icon">💨</div>
+      <img src="https://cdn-icons-png.flaticon.com/512/2057/2057896.png" alt="Ventilador" class="device-icon">
       <h3 class="device-name">Ventilador</h3>
       <span class="device-status status-off">Apagado</span>
       <div class="device-controls">
@@ -297,7 +391,7 @@
 
     <!-- Televisión -->
     <div class="device-card" id="tv">
-      <div class="device-icon">📺</div>
+      <img src="https://cdn-icons-png.flaticon.com/512/3474/3474360.png" alt="Televisión" class="device-icon">
       <h3 class="device-name">Televisión</h3>
       <span class="device-status status-off">Apagado</span>
       <div class="device-controls">
@@ -308,7 +402,7 @@
 
     <!-- Estufa -->
     <div class="device-card" id="heater">
-      <div class="device-icon">🔥</div>
+      <img src="https://cdn-icons-png.flaticon.com/512/3105/3105858.png" alt="Estufa" class="device-icon">
       <h3 class="device-name">Estufa</h3>
       <span class="device-status status-off">Apagado</span>
       <div class="device-controls">
@@ -319,7 +413,7 @@
 
     <!-- Lámparas -->
     <div class="device-card" id="lights">
-      <div class="device-icon">💡</div>
+      <img src="https://cdn-icons-png.flaticon.com/512/2088/2088617.png" alt="Lámparas" class="device-icon">
       <h3 class="device-name">Lámparas</h3>
       <span class="device-status status-on">Encendido</span>
       <div class="device-controls">
@@ -343,14 +437,22 @@
       statusElement.className = 'device-status status-on';
       statusElement.textContent = 'Encendido';
       showNotification(`${deviceCard.querySelector('.device-name').textContent} encendido correctamente`, 'success');
+      updateActiveDevicesCount();
     } else {
       statusElement.className = 'device-status status-off';
       statusElement.textContent = 'Apagado';
       showNotification(`${deviceCard.querySelector('.device-name').textContent} apagado correctamente`, 'success');
+      updateActiveDevicesCount();
     }
 
     // Aquí se podría agregar código para comunicarse con el backend
     console.log(`Dispositivo ${deviceId} ${turnOn ? 'encendido' : 'apagado'}`);
+  }
+
+  // Update active devices count in room overlay
+  function updateActiveDevicesCount() {
+    const activeDevices = document.querySelectorAll('.status-on').length;
+    document.querySelector('.room-status').textContent = `${activeDevices} dispositivos activos`;
   }
 
   // Show notification
@@ -402,7 +504,7 @@
     // Mostrar información del usuario actual
     try {
       const user = JSON.parse(userData);
-      document.getElementById('user-info').textContent = `Usuario: ${user.username} | Email: ${user.email}`;
+      document.getElementById('user-info').textContent = `Bienvenido, ${user.username} | ${user.email} | Zona: Living`;
     } catch (e) {
       console.error('Error al parsear datos de usuario:', e);
     }
@@ -431,8 +533,11 @@
       }
     }
 
+    // Actualizar contador de dispositivos activos
+    updateActiveDevicesCount();
+
     // Mostrar notificación de bienvenida
-    showNotification('Bienvenido a tu panel de control', 'success');
+    showNotification('Bienvenido a tu hogar inteligente', 'success');
   });
 </script>
 </body>
