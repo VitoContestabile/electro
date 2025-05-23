@@ -52,6 +52,7 @@
     .nav-links {
       display: flex;
       gap: 30px;
+      align-items: center;
     }
 
     .nav-links a {
@@ -63,6 +64,22 @@
 
     .nav-links a:hover {
       opacity: 0.8;
+    }
+
+    .btn-logout {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.8);
     }
 
     /* Main Content */
@@ -233,11 +250,8 @@
       🏠 SmartHome
     </div>
     <div class="nav-links">
-      <a href="inicio.html">Inicio</a>
-      <a href="#">Dispositivos</a>
-      <a href="#">Rutinas</a>
       <a href="#">Consumo</a>
-      <a href="#">Perfil</a>
+      <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
     </div>
   </nav>
 </header>
@@ -245,7 +259,7 @@
 <!-- Main Content -->
 <div class="main-content">
   <h1 class="page-title">Dispositivos del Living</h1>
-  <p class="user-info">Usuario: Juan Pérez | Casa: Mi Hogar | Zona: Living</p>
+  <p class="user-info" id="user-info">Usuario: Juan Pérez | Casa: Mi Hogar | Zona: Living</p>
 
   <div class="devices-grid">
     <!-- Microondas -->
@@ -355,8 +369,52 @@
     }, 3000);
   }
 
+  // Logout function
+  function logout() {
+    // Mostrar notificación de cierre de sesión
+    showNotification('Cerrando sesión...', 'success');
+
+    // Esperar un momento para que se vea la notificación antes de redireccionar
+    setTimeout(() => {
+      // Limpiar localStorage (token y datos de usuario)
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userData');
+
+      // Redireccionar a la página de inicio
+      window.location.href = 'inicio.html';
+    }, 1000);
+  }
+
+  // Verificar autenticación al cargar la página
+  function checkAuth() {
+    const token = localStorage.getItem('authToken');
+    const userData = localStorage.getItem('userData');
+
+    if (!token || !userData) {
+      // Si no hay token o datos de usuario, redireccionar a inicio
+      showNotification('Sesión no válida. Por favor inicie sesión', 'error');
+      setTimeout(() => {
+        window.location.href = 'inicio.html';
+      }, 1500);
+      return false;
+    }
+
+    // Mostrar información del usuario actual
+    try {
+      const user = JSON.parse(userData);
+      document.getElementById('user-info').textContent = `Usuario: ${user.username} | Email: ${user.email}`;
+    } catch (e) {
+      console.error('Error al parsear datos de usuario:', e);
+    }
+
+    return true;
+  }
+
   // Initialize device states from server (simulated)
   document.addEventListener('DOMContentLoaded', function() {
+    // Verificar autenticación primero
+    if (!checkAuth()) return;
+
     // Simulación de estados iniciales - en un caso real, estos vendrían del servidor
     const initialStates = {
       'fridge': true,  // Heladera encendida por defecto
@@ -372,6 +430,9 @@
         statusElement.textContent = 'Encendido';
       }
     }
+
+    // Mostrar notificación de bienvenida
+    showNotification('Bienvenido a tu panel de control', 'success');
   });
 </script>
 </body>
