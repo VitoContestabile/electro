@@ -620,64 +620,7 @@
       }
     }
 
-    // Form Handlers
-    async function handleLogin(event) {
-      event.preventDefault();
-
-      const username = document.getElementById('loginUsername').value;
-      const password = document.getElementById('loginPassword').value;
-
-      setButtonLoading('loginBtn', true, 'Iniciar Sesión');
-
-      try {
-        console.log('Intentando login con:', { username, password: '***' });
-
-        const response = await fetch(`${API_BASE_URL}/api/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: username,
-            password: password
-          })
-        });
-
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Login response:', data);
-
-        if (data.success) {
-          // Guardar token en localStorage
-          localStorage.setItem('authToken', data.data.token);
-          localStorage.setItem('userData', JSON.stringify(data.data.user));
-
-          showNotification('¡Bienvenido de vuelta! Iniciando sesión...', 'success');
-
-          setTimeout(() => {
-            window.location.href = 'menu.html';
-          }, 1500);
-        } else {
-          showNotification(data.message || 'Error al iniciar sesión', 'error');
-        }
-      } catch (error) {
-        console.error('Error en login:', error);
-        if (error.message.includes('Unexpected token')) {
-          showNotification('Error del servidor: Las rutas de API no están configuradas correctamente', 'error');
-        } else {
-          showNotification('Error de conexión. Verifica que el servidor esté funcionando.', 'error');
-        }
-      } finally {
-        setButtonLoading('loginBtn', false, 'Iniciar Sesión');
-      }
-    }
-
+    // Update the handleSignup function in inicio.html
     async function handleSignup(event) {
       event.preventDefault();
 
@@ -719,14 +662,17 @@
         console.log('Signup response:', data);
 
         if (data.success) {
-          // Guardar token en localStorage
-          localStorage.setItem('authToken', data.data.token);
-          localStorage.setItem('userData', JSON.stringify(data.data.user));
-
-          showNotification('¡Cuenta creada exitosamente! Bienvenido a SmartHome', 'success');
+          // No guardar token después del registro
+          // Solo mostrar notificación y redirigir al login
+          showNotification('¡Cuenta creada exitosamente! Por favor inicia sesión', 'success');
 
           setTimeout(() => {
-            window.location.href = 'menu.html';
+            // Cerrar el modal de registro
+            closeModal('signup');
+            // Abrir el modal de login
+            openModal('login');
+            // Prellenar el campo de usuario con el nombre recién registrado
+            document.getElementById('loginUsername').value = username;
           }, 1500);
         } else {
           showNotification(data.message || 'Error al crear la cuenta', 'error');
@@ -740,6 +686,65 @@
         }
       } finally {
         setButtonLoading('signupBtn', false, 'Crear Cuenta');
+      }
+    }
+
+    // Update the handleLogin function to redirect to elementos.html
+    async function handleLogin(event) {
+      event.preventDefault();
+
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      setButtonLoading('loginBtn', true, 'Iniciar Sesión');
+
+      try {
+        console.log('Intentando login con:', { username, password: '***' });
+
+        const response = await fetch(`${API_BASE_URL}/api/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password
+          })
+        });
+
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Login response:', data);
+
+        if (data.success) {
+          // Guardar token en localStorage
+          localStorage.setItem('authToken', data.data.token);
+          localStorage.setItem('userData', JSON.stringify(data.data.user));
+
+          showNotification('¡Bienvenido de vuelta! Iniciando sesión...', 'success');
+
+          setTimeout(() => {
+            // Redirigir a elementos.html en lugar de menu.html
+            window.location.href = 'elementos.html';
+          }, 1500);
+        } else {
+          showNotification(data.message || 'Error al iniciar sesión', 'error');
+        }
+      } catch (error) {
+        console.error('Error en login:', error);
+        if (error.message.includes('Unexpected token')) {
+          showNotification('Error del servidor: Las rutas de API no están configuradas correctamente', 'error');
+        } else {
+          showNotification('Error de conexión. Verifica que el servidor esté funcionando.', 'error');
+        }
+      } finally {
+        setButtonLoading('loginBtn', false, 'Iniciar Sesión');
       }
     }
 
