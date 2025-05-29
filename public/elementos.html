@@ -250,17 +250,7 @@
       background: linear-gradient(45deg, #e74c3c, #c0392b);
     }
 
-    .debug-info {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 10px;
-      border-radius: 5px;
-      font-size: 12px;
-      z-index: 2000;
-    }
+
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
@@ -385,57 +375,30 @@
 <!-- Notification Element -->
 <div id="notification" class="notification"></div>
 
-<!-- Debug Info (remove in production) -->
-<div class="debug-info" id="debug-info"></div>
+
 
 <script>
-  // Función para mostrar información de debug
-  function showDebugInfo(message) {
-    const debugElement = document.getElementById('debug-info');
-    if (debugElement) {
-      debugElement.innerHTML += message + '<br>';
-    }
-    console.log(message);
-  }
-
   // Función para mostrar el username
   function displayUsername() {
     try {
-      showDebugInfo('Ejecutando displayUsername()...');
-
       // Obtener userData del localStorage
       const userDataString = localStorage.getItem('userData');
-      showDebugInfo('userData string: ' + userDataString);
 
       if (!userDataString) {
-        showDebugInfo('No hay userData en localStorage');
-        // Crear datos de prueba para demostración
-        const testUser = { username: 'UsuarioDemo' };
-        localStorage.setItem('userData', JSON.stringify(testUser));
-        showDebugInfo('Creando usuario de prueba');
+        return; // No hay datos de usuario
       }
 
       // Parsear los datos
-      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-      showDebugInfo('userData parseado: ' + JSON.stringify(userData));
+      const userData = JSON.parse(userDataString);
 
       // Obtener el elemento del DOM
       const usernameDisplay = document.getElementById('username-display');
-      showDebugInfo('Elemento username-display encontrado: ' + (usernameDisplay ? 'Sí' : 'No'));
 
-      if (usernameDisplay) {
-        if (userData && userData.username) {
-          // Mostrar el username con formato de saludo
-          usernameDisplay.textContent = ', ' + userData.username;
-          showDebugInfo('Username establecido: ' + userData.username);
-        } else {
-          // Limpiar el display si no hay username
-          usernameDisplay.textContent = '';
-          showDebugInfo('Username vacío');
-        }
+      if (usernameDisplay && userData && userData.username) {
+        // Mostrar el username con formato de saludo
+        usernameDisplay.textContent = ', ' + userData.username;
       }
     } catch (error) {
-      showDebugInfo('Error en displayUsername(): ' + error.message);
       console.error('Error displaying username:', error);
       // En caso de error, limpiar el display
       const usernameDisplay = document.getElementById('username-display');
@@ -509,20 +472,15 @@
 
   // Inicialización cuando se carga la página
   document.addEventListener('DOMContentLoaded', function() {
-    showDebugInfo('DOM Content Loaded - Iniciando...');
-
     // Mostrar el username
     displayUsername();
 
     // Actualizar el conteo de dispositivos activos
     updateActiveDevicesCount();
-
-    showDebugInfo('Inicialización completada');
   });
 
   // También ejecutar cuando la página esté completamente cargada
   window.addEventListener('load', function() {
-    showDebugInfo('Window Load - Re-ejecutando displayUsername...');
     displayUsername();
   });
 </script>
