@@ -643,16 +643,33 @@
     }
   });
 
+  // Add this function to display the username
+  function displayUsername() {
+    try {
+      // Get userData from localStorage and parse it
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+
+      // Check if username exists
+      if (userData && userData.username) {
+        // Set the username in the display element
+        document.getElementById('username-display').textContent = userData.username;
+      } else {
+        // If no username found, leave blank or set default
+        document.getElementById('username-display').textContent = "";
+      }
+    } catch (error) {
+      console.error('Error displaying username:', error);
+      // In case of error, clear the display
+      document.getElementById('username-display').textContent = "";
+    }
+  }
   // Initialize device states from server
   document.addEventListener('DOMContentLoaded', function() {
-    // Get user data and token
-    const token = localStorage.getItem('authToken');
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    // Display username
+    displayUsername();
 
-    // Mostrar nombre de usuario
-    if (userData && userData.username) {
-      document.getElementById('username-display').textContent = userData.username;
-    }
+    // Rest of your existing DOMContentLoaded code...
+    const token = localStorage.getItem('authToken');
 
     // Check if user is authenticated
     if (!token) {
