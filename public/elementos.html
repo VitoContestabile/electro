@@ -291,7 +291,7 @@
 
 <!-- Main Content -->
 <div class="main-content">
-  <h1 class="page-title">Bienvenido a tu Casa Inteligente <span id="username-display">Juanchi</span></h1>
+  <h1 class="page-title">Bienvenido a tu Casa Inteligente <span id="username-display"></span></h1>
 
   <!-- Room View -->
   <div class="room-view">
@@ -459,6 +459,18 @@
     return true;
   }
 
+  // Display username from localStorage
+  document.addEventListener('DOMContentLoaded', () => {
+    const usernameDisplay = document.getElementById('username-display');
+    const userData = JSON.parse(localStorage.getItem('userData'));
+
+    if (userData && userData.username) {
+      usernameDisplay.textContent = userData.username;
+    } else {
+      // Fallback in case user data is not available
+      usernameDisplay.textContent = 'Usuario';
+    }
+  });
   // Initialize device states from server (simulated)
   document.addEventListener('DOMContentLoaded', function() {
     // Verificar autenticación primero
