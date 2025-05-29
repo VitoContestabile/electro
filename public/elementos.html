@@ -51,7 +51,7 @@
 
     .nav-links {
       display: flex;
-      gap: 20px;
+      gap: 30px;
       align-items: center;
     }
 
@@ -63,206 +63,214 @@
     }
 
     .nav-links a:hover {
-      transform: translateY(-2px);
-      text-shadow: 0 5px 15px rgba(255, 255, 255, 0.4);
+      opacity: 0.8;
     }
 
     .btn-logout {
-      padding: 10px 20px;
       background: rgba(255, 255, 255, 0.2);
-      border: none;
-      border-radius: 25px;
       color: white;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      padding: 8px 16px;
+      border-radius: 20px;
       cursor: pointer;
       font-weight: 600;
       transition: all 0.3s ease;
     }
 
     .btn-logout:hover {
-      background: rgba(255, 107, 107, 0.4);
-      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.8);
     }
 
     /* Main Content */
     .main-content {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 100px 20px 40px;
+      padding: 120px 20px 80px;
     }
 
     .page-title {
       color: white;
       font-size: 2.5rem;
-      margin-bottom: 40px;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      margin-bottom: 30px;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
 
     .user-info {
-      color: white;
+      color: rgba(255, 255, 255, 0.9);
+      text-align: center;
+      margin-bottom: 50px;
       font-size: 1.2rem;
-      margin-bottom: 20px;
     }
 
     /* Room View */
     .room-view {
-      width: 100%;
-      height: 200px;
-      background: rgba(255, 255, 255, 0.1);
+      position: relative;
+      background: url('https://images.unsplash.com/photo-1600210492493-0946911123ea?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
+      height: 250px;
       border-radius: 20px;
       margin-bottom: 40px;
-      overflow: hidden;
-      position: relative;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
     .room-overlay {
       position: absolute;
-      top: 0;
+      bottom: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6));
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
       padding: 20px;
+      border-radius: 0 0 20px 20px;
+      color: white;
     }
 
     .room-name {
-      color: white;
       font-size: 1.8rem;
-      font-weight: bold;
       margin-bottom: 5px;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     }
 
     .room-status {
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 1.1rem;
+      font-size: 1rem;
+      opacity: 0.8;
     }
 
     /* Devices Grid */
     .devices-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 30px;
     }
 
     .device-card {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 15px;
-      padding: 25px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
       transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .device-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
     }
 
     .device-icon {
-      font-size: 2.5rem;
-      margin-bottom: 15px;
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      margin-bottom: 20px;
     }
 
     .device-name {
       font-size: 1.5rem;
-      font-weight: 600;
+      font-weight: bold;
+      margin-bottom: 15px;
       color: #2c3e50;
-      margin-bottom: 10px;
     }
 
     .device-status {
-      font-size: 1.1rem;
-      font-weight: 500;
-      margin-bottom: 20px;
-      padding: 5px 12px;
+      padding: 8px 15px;
       border-radius: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
       display: inline-block;
     }
 
     .status-on {
-      background-color: #27ae60;
-      color: white;
+      background: rgba(46, 204, 113, 0.2);
+      color: #27ae60;
     }
 
     .status-off {
-      background-color: #7f8c8d;
-      color: white;
+      background: rgba(231, 76, 60, 0.2);
+      color: #c0392b;
     }
 
     .device-controls {
       display: flex;
-      gap: 10px;
+      gap: 15px;
+      margin-top: 10px;
     }
 
     .btn-control {
-      padding: 8px 16px;
+      padding: 12px 25px;
       border: none;
-      border-radius: 10px;
+      border-radius: 25px;
       cursor: pointer;
       font-weight: 600;
       transition: all 0.3s ease;
     }
 
     .btn-on {
-      background: #27ae60;
+      background: linear-gradient(45deg, #2ecc71, #27ae60);
       color: white;
     }
 
     .btn-off {
-      background: #e74c3c;
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
       color: white;
     }
 
     .btn-control:hover {
       transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
 
     .btn-on:hover {
-      background: #2ecc71;
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
     }
 
     .btn-off:hover {
-      background: #f54a3d;
+      box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
     }
 
     /* Notification */
     .notification {
       position: fixed;
-      bottom: 20px;
+      top: 20px;
       right: 20px;
       padding: 15px 25px;
       border-radius: 10px;
       color: white;
-      font-weight: 500;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      z-index: 3000;
       display: none;
     }
 
     .notification-success {
-      background: #27ae60;
+      background: linear-gradient(45deg, #2ecc71, #27ae60);
     }
 
     .notification-error {
-      background: #e74c3c;
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes fadeOut {
       from { opacity: 1; transform: translateY(0); }
-      to { opacity: 0; transform: translateY(20px); }
+      to { opacity: 0; transform: translateY(-20px); }
     }
 
     @media (max-width: 768px) {
+      .page-title {
+        font-size: 2rem;
+      }
+
       .devices-grid {
         grid-template-columns: 1fr;
+      }
+
+      .device-controls {
+        flex-direction: column;
       }
     }
   </style>
@@ -275,10 +283,7 @@
       🏠 SmartHome
     </div>
     <div class="nav-links">
-      <a href="index.html">Inicio</a>
-      <a href="#">Dispositivos</a>
-      <a href="#">Rutinas</a>
-      <a href="#">Ayuda</a>
+      <a href="#">Consumo</a>
       <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
     </div>
   </nav>
@@ -286,81 +291,79 @@
 
 <!-- Main Content -->
 <div class="main-content">
-  <h1 class="page-title">Bienvenido a tu Casa Inteligente <span id="username-display"></span></h1>
+  <h1 class="page-title">Bienvenido a tu Casa Inteligente <span id="username-display"> </span></h1>
 
   <!-- Room View -->
   <div class="room-view">
-    <img src="https://images.unsplash.com/photo-1585128792020-803d29415281?ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80" alt="Living Room" style="width: 100%; height: 100%; object-fit: cover;">
     <div class="room-overlay">
-      <h2 class="room-name">Living</h2>
-      <p class="room-status">3 dispositivos activos</p>
+      <h2 class="room-name">Dispositivos del Living</h2>
     </div>
   </div>
 
   <div class="devices-grid">
     <!-- Microondas -->
     <div class="device-card" id="microwave">
-      <div class="device-icon">🔆</div>
+      <img src="https://cdn-icons-png.flaticon.com/512/2252/2252076.png" alt="Microondas" class="device-icon">
       <h3 class="device-name">Microondas</h3>
-      <div class="device-status status-off">APAGADO</div>
+      <span class="device-status status-off">Apagado</span>
       <div class="device-controls">
-        <button class="btn-control btn-on">ENCENDER</button>
-        <button class="btn-control btn-off">APAGAR</button>
+        <button class="btn-control btn-on" onclick="toggleDevice('microwave', true)">Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('microwave', false)">Apagar</button>
       </div>
     </div>
 
     <!-- Heladera -->
     <div class="device-card" id="fridge">
-      <div class="device-icon">❄️</div>
+      <img src="https://cdn-icons-png.flaticon.com/512/2643/2643642.png" alt="Heladera" class="device-icon">
       <h3 class="device-name">Heladera</h3>
-      <div class="device-status status-on">ENCENDIDO</div>
+      <span class="device-status status-on">Encendido</span>
       <div class="device-controls">
-        <button class="btn-control btn-on">ENCENDER</button>
-        <button class="btn-control btn-off">APAGAR</button>
+        <button class="btn-control btn-on" onclick="toggleDevice('fridge', true)">Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('fridge', false)">Apagar</button>
       </div>
     </div>
 
     <!-- Ventilador -->
     <div class="device-card" id="fan">
-      <div class="device-icon">💨</div>
+      <img src="https://cdn-icons-png.flaticon.com/512/3278/3278903.png" alt="Ventilador" class="device-icon">
       <h3 class="device-name">Ventilador</h3>
-      <div class="device-status status-on">ENCENDIDO</div>
+      <span class="device-status status-off">Apagado</span>
       <div class="device-controls">
-        <button class="btn-control btn-on">ENCENDER</button>
-        <button class="btn-control btn-off">APAGAR</button>
+        <button class="btn-control btn-on" onclick="toggleDevice('fan', true)">Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('fan', false)">Apagar</button>
       </div>
     </div>
 
     <!-- Televisión -->
     <div class="device-card" id="tv">
-      <div class="device-icon">📺</div>
+      <img src="https://cdn-icons-png.flaticon.com/512/3474/3474360.png" alt="Televisión" class="device-icon">
       <h3 class="device-name">Televisión</h3>
-      <div class="device-status status-off">APAGADO</div>
+      <span class="device-status status-off">Apagado</span>
       <div class="device-controls">
-        <button class="btn-control btn-on">ENCENDER</button>
-        <button class="btn-control btn-off">APAGAR</button>
+        <button class="btn-control btn-on" onclick="toggleDevice('tv', true)">Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('tv', false)">Apagar</button>
       </div>
     </div>
 
     <!-- Estufa -->
     <div class="device-card" id="heater">
-      <div class="device-icon">🔥</div>
+      <img src="https://cdn-icons-png.flaticon.com/512/3105/3105858.png" alt="Estufa" class="device-icon">
       <h3 class="device-name">Estufa</h3>
-      <div class="device-status status-off">APAGADO</div>
+      <span class="device-status status-off">Apagado</span>
       <div class="device-controls">
-        <button class="btn-control btn-on">ENCENDER</button>
-        <button class="btn-control btn-off">APAGAR</button>
+        <button class="btn-control btn-on" onclick="toggleDevice('heater', true)">Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('heater', false)">Apagar</button>
       </div>
     </div>
 
     <!-- Lámparas -->
     <div class="device-card" id="lights">
-      <div class="device-icon">💡</div>
+      <img src="https://cdn-icons-png.flaticon.com/512/2088/2088617.png" alt="Lámparas" class="device-icon">
       <h3 class="device-name">Lámparas</h3>
-      <div class="device-status status-on">ENCENDIDO</div>
+      <span class="device-status status-on">Encendido</span>
       <div class="device-controls">
-        <button class="btn-control btn-on">ENCENDER</button>
-        <button class="btn-control btn-off">APAGAR</button>
+        <button class="btn-control btn-on" onclick="toggleDevice('lights', true)">Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('lights', false)">Apagar</button>
       </div>
     </div>
   </div>
@@ -370,6 +373,7 @@
 <div id="notification" class="notification"></div>
 
 <script>
+  // Toggle device state
   // Form submission
   const loginForm = document.getElementById('login-form');
   const signupForm = document.getElementById('signup-form');
@@ -404,15 +408,15 @@
         body: JSON.stringify({ username, password })
       });
 
-      const result = await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || 'Error al iniciar sesión');
+        throw new Error(data.message || 'Error al iniciar sesión');
       }
 
       // Guardar token y datos de usuario en localStorage
-      localStorage.setItem('authToken', result.data.token);
-      localStorage.setItem('userData', JSON.stringify(result.data.user));
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userData', JSON.stringify(data.user));
 
       // Redireccionar a dashboard
       window.location.href = 'elementos.html';
@@ -426,23 +430,104 @@
     }
   });
 
-  // Comprobar si ya hay sesión al cargar
-  document.addEventListener('DOMContentLoaded', function() {
-    // Display username
-    displayUsername();
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    // Check authentication token
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      window.location.href = 'index.html'; // Redirect to login page if no token
+    const username = document.getElementById('signup-username').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+
+    // Validación básica
+    if (!username || !email || !password) {
+      alert('Por favor complete todos los campos');
       return;
     }
 
-    // Setup device toggle functionality
-    setupDeviceToggles();
+    if (password.length < 6) {
+      alert('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
 
-    // Initialize active devices count
-    updateActiveDevicesCount();
+    // Mostrar spinner y deshabilitar botón
+    signupSpinner.style.display = 'inline-block';
+    signupSubmit.disabled = true;
+
+    try {
+      // Enviar solicitud al servidor
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al registrarse');
+      }
+
+      // Guardar token y datos de usuario en localStorage
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userData', JSON.stringify(data.user));
+
+      // Redireccionar a dashboard
+      window.location.href = 'elementos.html';
+    } catch (error) {
+      alert(error.message || 'Error al registrarse. Intente nuevamente.');
+      console.error(error);
+    } finally {
+      // Ocultar spinner y habilitar botón
+      signupSpinner.style.display = 'none';
+      signupSubmit.disabled = false;
+    }
+  });
+
+  // Comprobar si ya hay sesión al cargar
+  document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      // Verificar token con el servidor
+      fetch('/api/auth/verify', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+              .then(response => {
+                if (response.ok) {
+                  // Si el token es válido, mostrar botón de dashboard
+                  document.querySelector('.nav-buttons').innerHTML = `
+            <a href="elementos.html" class="btn btn-login">Mi Dashboard</a>
+            <button class="btn btn-signup" id="logout-btn">Cerrar Sesión</button>
+          `;
+
+                  // Agregar evento de logout
+                  document.getElementById('logout-btn').addEventListener('click', () => {
+                    fetch('/api/auth/logout', {
+                      method: 'POST',
+                      headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                    })
+                            .finally(() => {
+                              localStorage.removeItem('authToken');
+                              localStorage.removeItem('userData');
+                              window.location.reload();
+                            });
+                  });
+                } else {
+                  // Si el token no es válido, eliminar del localStorage
+                  localStorage.removeItem('authToken');
+                  localStorage.removeItem('userData');
+                }
+              })
+              .catch(() => {
+                // Error en la verificación, eliminar del localStorage
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userData');
+              });
+    }
   });
 
   // Update active devices count in room overlay
@@ -450,7 +535,14 @@
     const activeDevices = document.querySelectorAll('.status-on').length;
     const roomStatus = document.querySelector('.room-status');
     if (roomStatus) {
-      roomStatus.textContent = `${activeDevices} dispositivo${activeDevices !== 1 ? 's' : ''} activo${activeDevices !== 1 ? 's' : ''}`;
+      roomStatus.textContent = `${activeDevices} dispositivos activos`;
+    } else {
+      // Si no existe el elemento, crearlo
+      const roomOverlay = document.querySelector('.room-overlay');
+      const statusElement = document.createElement('p');
+      statusElement.className = 'room-status';
+      statusElement.textContent = `${activeDevices} dispositivos activos`;
+      roomOverlay.appendChild(statusElement);
     }
   }
 
@@ -482,12 +574,17 @@
         'Authorization': `Bearer ${token}`
       }
     })
+            .catch(error => {
+              console.error('Error al cerrar sesión:', error);
+            })
             .finally(() => {
-              // Independientemente del resultado, eliminar datos locales y redirigir
+              // Limpiar localStorage independientemente del resultado
+              localStorage.removeItem('authToken');
+              localStorage.removeItem('userData');
+
+              // Redireccionar a la página de inicio
               setTimeout(() => {
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('userData');
-                window.location.href = 'index.html';
+                window.location.href = 'inicio.html';
               }, 1000);
             });
   }
@@ -545,8 +642,7 @@
       signupSubmit.disabled = false;
     }
   });
-
-  // Function to display the username
+  // Add this function to display the username
   function displayUsername() {
     try {
       // Get userData from localStorage and parse it
@@ -565,61 +661,11 @@
       }
     } catch (error) {
       console.error('Error displaying username:', error);
-      // In case of error, ensure the element is empty
+      // In case of error, clear the display
       document.getElementById('username-display').textContent = "";
     }
   }
 
-  // Function to set up device toggle functionality
-  function setupDeviceToggles() {
-    // Get all device cards
-    const deviceCards = document.querySelectorAll('.device-card');
-
-    // Add click event listeners to each device
-    deviceCards.forEach(device => {
-      const deviceId = device.id;
-      const onButton = device.querySelector('.btn-on');
-      const offButton = device.querySelector('.btn-off');
-      const statusElement = device.querySelector('.device-status');
-
-      // Add click handler for ON button
-      onButton.addEventListener('click', () => {
-        // Only turn on if it's currently off
-        if (statusElement.classList.contains('status-off')) {
-          toggleDevice(deviceId, true);
-        }
-      });
-
-      // Add click handler for OFF button
-      offButton.addEventListener('click', () => {
-        // Only turn off if it's currently on
-        if (statusElement.classList.contains('status-on')) {
-          toggleDevice(deviceId, false);
-        }
-      });
-    });
-  }
-
-  // Function to toggle a device state
-  function toggleDevice(deviceId, turnOn) {
-    const device = document.getElementById(deviceId);
-    const statusElement = device.querySelector('.device-status');
-
-    if (turnOn) {
-      statusElement.textContent = 'ENCENDIDO';
-      statusElement.classList.remove('status-off');
-      statusElement.classList.add('status-on');
-      showNotification(`${device.querySelector('.device-name').textContent} encendido`, 'success');
-    } else {
-      statusElement.textContent = 'APAGADO';
-      statusElement.classList.remove('status-on');
-      statusElement.classList.add('status-off');
-      showNotification(`${device.querySelector('.device-name').textContent} apagado`, 'success');
-    }
-
-    // Update the count of active devices
-    updateActiveDevicesCount();
-  }
 </script>
 </body>
 </html>
