@@ -374,89 +374,131 @@
 
 <script>
   // Toggle device state
+  // Replace the toggleDevice function
   function toggleDevice(deviceId, turnOn) {
     const deviceCard = document.getElementById(deviceId);
     const statusElement = deviceCard.querySelector('.device-status');
-
-    if (turnOn) {
-      statusElement.className = 'device-status status-on';
-      statusElement.textContent = 'Encendido';
-      showNotification(`${deviceCard.querySelector('.device-name').textContent} encendido correctamente`, 'success');
-    } else {
-      statusElement.className = 'device-status status-off';
-      statusElement.textContent = 'Apagado';
-      showNotification(`${deviceCard.querySelector('.device-name').textContent} apagado correctamente`, 'success');
-    }
-
-    // Aquí se podría agregar código para comunicarse con el backend
-    console.log(`Dispositivo ${deviceId} ${turnOn ? 'encendido' : 'apagado'}`);
-
-    // Update active devices count in room overlay
-    updateActiveDevicesCount();
-  }
-
-  // Update active devices count in room overlay
-  function updateActiveDevicesCount() {
-    const activeDevices = document.querySelectorAll('.status-on').length;
-    document.querySelector('.room-status').textContent = `${activeDevices} dispositivos activos`;
-  }
-
-  // Show notification
-  function showNotification(message, type) {
-    const notification = document.getElementById('notification');
-    notification.textContent = message;
-    notification.className = `notification notification-${type}`;
-    notification.style.display = 'block';
-    notification.style.animation = 'fadeIn 0.5s forwards';
-
-    setTimeout(() => {
-      notification.style.animation = 'fadeOut 0.5s forwards';
-      setTimeout(() => {
-        notification.style.display = 'none';
-      }, 500);
-    }, 3000);
-  }
-
-  // Logout function
-  function logout() {
-    // Mostrar notificación de cierre de sesión
-    showNotification('Cerrando sesión...', 'success');
-
-    // Esperar un momento para que se vea la notificación antes de redireccionar
-    setTimeout(() => {
-      // Limpiar localStorage (token y datos de usuario)
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userData');
-
-      // Redireccionar a la página de inicio
-      window.location.href = 'inicio.html';
-    }, 1000);
-  }
-
-  // Verificar autenticación al cargar la página
-  function checkAuth() {
     const token = localStorage.getItem('authToken');
-    const userData = localStorage.getItem('userData');
 
-    if (!token || !userData) {
-      // Si no hay token o datos de usuario, redireccionar a inicio
-      showNotification('Sesión no válida. Por favor inicie sesión', 'error');
+    if (!token) {
+      showNotification('No hay sesión activa', 'error');
       setTimeout(() => {
         window.location.href = 'inicio.html';
       }, 1500);
-      return false;
+      return;
     }
 
-    // Mostrar información del usuario actual
-    try {
-      const user = JSON.parse(userData);
-      document.getElementById('user-info').textContent = `Usuario: ${user.username} | Email: ${user.email}`;
-      document.getElementById('username-display').textContent = user.username;
-    } catch (e) {
-      console.error('Error al parsear datos de usuario:', e);
+    // Enviar actualización al servidor
+    fetch('/api/devices/toggle', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        deviceId: deviceId,
+        status: turnOn
+      })
+    })
+
+    // Update active devices count in room overlay
+    function updateActiveDevicesCount() {
+      const activeDevices = document.querySelectorAll('.status-on').length;
+      document.querySelector('.room-status').textContent = `${activeDevices} dispositivos activos`;
     }
 
-    return true;
+    // Show notification
+    function showNotification(message, type) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = `notification notification-${type}`;
+      notification.style.display = 'block';
+      notification.style.animation = 'fadeIn 0.5s forwards';
+
+      setTimeout(() => {
+        notification.style.animation = 'fadeOut 0.5s forwards';
+        setTimeout(() => {
+          notification.style.display = 'none';
+        }, 500);
+      }, 3000);
+    }
+
+    // Update the logout function
+    function logout() {
+      const token = localStorage.getItem('authToken');
+
+      // Mostrar notificación de cierre de sesión
+      showNotification('Cerrando sesión...', 'success');
+
+      // Enviar solicitud de logout al servidor (opcional)
+      fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+              .catch(error => console.error('Error en logout:', error))
+              .finally(() => {
+                // Limpiar localStorage
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userData');
+
+                // Redireccionar a la página de inicio
+                setTimeout(() => {
+                  window.location.href = 'inicio.html';
+                }, 1000);
+              });
+    }
+
+    // Verificar autenticación al cargar la página
+    function checkAuth() {
+      const token = localStorage.getItem('authToken');
+
+      if (!token) {
+        showNotification('Sesión no válida. Por favor inicie sesión', 'error');
+        setTimeout(() => {
+          window.location.href = 'inicio.html';
+        }, 1500);
+        return false;
+      }
+
+      // Verificar validez del token con el servidor
+      fetch('/api/auth/verify', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Token inválido');
+                }
+                return response.json();
+              })
+              .catch(error => {
+                console.error('Error de autenticación:', error);
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userData');
+                showNotification('Sesión expirada. Por favor inicie sesión nuevamente', 'error');
+                setTimeout(() => {
+                  window.location.href = 'inicio.html';
+                }, 1500);
+                return false;
+              });
+
+      // Mostrar información del usuario actual
+      try {
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const usernameDisplay = document.getElementById('username-display');
+        if (usernameDisplay) {
+          usernameDisplay.textContent = userData.username;
+        }
+      } catch (e) {
+        console.error('Error al parsear datos de usuario:', e);
+      }
+
+      return true;
+    }
   }
 
   // Display username from localStorage
@@ -476,27 +518,69 @@
     // Verificar autenticación primero
     if (!checkAuth()) return;
 
-    // Simulación de estados iniciales - en un caso real, estos vendrían del servidor
-    const initialStates = {
-      'fridge': true,  // Heladera encendida por defecto
-      'lights': true   // Lámparas encendidas por defecto
-    };
+    const token = localStorage.getItem('authToken');
 
-    // Aplicar estados iniciales
-    for (const [deviceId, isOn] of Object.entries(initialStates)) {
-      if (isOn) {
-        const deviceCard = document.getElementById(deviceId);
-        const statusElement = deviceCard.querySelector('.device-status');
-        statusElement.className = 'device-status status-on';
-        statusElement.textContent = 'Encendido';
+    // Obtener estados iniciales del servidor
+    fetch('/api/devices/status', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
-    }
+    })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Error al obtener estado de dispositivos');
+              }
+              return response.json();
+            })
+            .then(data => {
+              // Aplicar estados iniciales desde el servidor
+              if (data.devices) {
+                data.devices.forEach(device => {
+                  const deviceCard = document.getElementById(device.id);
+                  if (deviceCard) {
+                    const statusElement = deviceCard.querySelector('.device-status');
+                    if (device.status) {
+                      statusElement.className = 'device-status status-on';
+                      statusElement.textContent = 'Encendido';
+                    } else {
+                      statusElement.className = 'device-status status-off';
+                      statusElement.textContent = 'Apagado';
+                    }
+                  }
+                });
+              }
 
-    // Actualizar contador de dispositivos activos
-    updateActiveDevicesCount();
+              // Actualizar contador de dispositivos activos
+              updateActiveDevicesCount();
 
-    // Mostrar notificación de bienvenida
-    showNotification('Bienvenido a tu Casa Inteligente', 'success');
+              // Mostrar notificación de bienvenida
+              const userData = JSON.parse(localStorage.getItem('userData'));
+              showNotification(`Bienvenido ${userData.username} a tu Casa Inteligente`, 'success');
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              // Si hay error, usar valores por defecto
+              const initialStates = {
+                'fridge': true,  // Heladera encendida por defecto
+                'lights': true   // Lámparas encendidas por defecto
+              };
+
+              // Aplicar estados iniciales
+              for (const [deviceId, isOn] of Object.entries(initialStates)) {
+                if (isOn) {
+                  const deviceCard = document.getElementById(deviceId);
+                  if (deviceCard) {
+                    const statusElement = deviceCard.querySelector('.device-status');
+                    statusElement.className = 'device-status status-on';
+                    statusElement.textContent = 'Encendido';
+                  }
+                }
+              }
+
+              updateActiveDevicesCount();
+              showNotification('Usando configuración por defecto', 'error');
+            });
   });
 </script>
 </body>

@@ -1316,48 +1316,8 @@
   const loginSubmit = document.getElementById('login-submit');
   const signupSubmit = document.getElementById('signup-submit');
 
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
 
-    const username = document.getElementById('login-username').value;
-    const password = document.getElementById('login-password').value;
-
-    // Validación básica
-    if (!username || !password) {
-      alert('Por favor complete todos los campos');
-      return;
-    }
-
-    // Mostrar spinner y deshabilitar botón
-    loginSpinner.style.display = 'inline-block';
-    loginSubmit.disabled = true;
-
-    try {
-      // Simulación de login (reemplazar con API real)
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // Simulando datos de usuario y token
-      const userData = {
-        username: username,
-        email: `${username}@ejemplo.com`,
-        id: '123456'
-      };
-
-      // Guardar datos en localStorage
-      localStorage.setItem('authToken', 'token-simulado-1234567890');
-      localStorage.setItem('userData', JSON.stringify(userData));
-
-      // Redireccionar a dashboard
-      window.location.href = 'elementos.html';
-    } catch (error) {
-      alert('Error al iniciar sesión. Intente nuevamente.');
-      console.error(error);
-    } finally {
-      // Ocultar spinner y habilitar botón
-      loginSpinner.style.display = 'none';
-      loginSubmit.disabled = false;
-    }
-  });
+  now give me complete updated inicio.html y elementos.html
 
   signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
