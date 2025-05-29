@@ -1,41 +1,469 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Corrientes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lectura de Corrientes</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      padding: 20px 0;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .logo {
+      color: white;
+      font-size: 1.8rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      opacity: 0.8;
+    }
+
+    .btn-logout {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Main Content */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 120px 20px 80px;
+    }
+
+    .page-title {
+      color: white;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .page-icon {
+      font-size: 3rem;
+    }
+
+    /* Data Display Cards */
+    .data-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+    .data-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .data-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    .data-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      color: #667eea;
+    }
+
+    .data-label {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+
+    .data-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #27ae60;
+      margin-bottom: 10px;
+    }
+
+    .data-unit {
+      font-size: 1rem;
+      color: #7f8c8d;
+      font-weight: 500;
+    }
+
+    /* Status Card */
+    .status-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .status-loading {
+      background: rgba(52, 152, 219, 0.2);
+      color: #3498db;
+    }
+
+    .status-success {
+      background: rgba(46, 204, 113, 0.2);
+      color: #27ae60;
+    }
+
+    .status-error {
+      background: rgba(231, 76, 60, 0.2);
+      color: #c0392b;
+    }
+
+    .timestamp-card {
+      grid-column: 1 / -1;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+
+    .timestamp-label {
+      font-size: 1rem;
+      color: #7f8c8d;
+      margin-bottom: 10px;
+    }
+
+    .timestamp-value {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    /* Loading Animation */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Refresh Button */
+    .refresh-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .refresh-btn:hover {
+      transform: translateY(-3px) scale(1.1);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    }
+
+    .refresh-btn:active {
+      transform: translateY(-1px) scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      .page-title {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .data-container {
+        grid-template-columns: 1fr;
+      }
+
+      .data-card {
+        padding: 30px 20px;
+      }
+
+      .refresh-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Lectura de Corrientes</h1>
-  <div id="output">Cargando datos...</div>
+<!-- Header -->
+<header>
+  <nav>
+    <div class="logo">
+      ⚡ SmartHome
+    </div>
+    <div class="nav-links">
+      <a href="elementos.html">Dispositivos</a>
+      <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+    </div>
+  </nav>
+</header>
 
-  <script>
-    // Suponiendo que tenés un token JWT guardado
-    const token = localStorage.getItem("authToken")// reemplazá esto con el real
+<!-- Main Content -->
+<div class="main-content">
+  <h1 class="page-title">
+    <span class="page-icon">📊</span>
+    Lectura de Corrientes<span id="username-display"></span>
+  </h1>
 
-    fetch('/api/corrientes/current', {
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    })
-    .then(response => {
-      if (!response.ok) throw new Error("Error en la respuesta del servidor");
-      return response.json();
-    })
-    .then(data => {
-      const div = document.getElementById('output');
-      if (data.success) {
-        div.innerHTML = `
-          <p><strong>Corriente 1:</strong> ${data.data.corriente1}</p>
-          <p><strong>Corriente 2:</strong> ${data.data.corriente2}</p>
-          <p><strong>Timestamp:</strong> ${data.data.timestamp}</p>
-        `;
-      } else {
-        div.innerText = "Error: no se pudieron obtener los datos.";
-      }
-    })
-    .catch(error => {
-      document.getElementById('output').innerText = 'Error al obtener los datos: ' + error.message;
+  <!-- Status Card -->
+  <div class="status-card">
+    <div id="status-indicator" class="status-indicator status-loading">
+      <span class="loading-spinner"></span>
+      Cargando datos...
+    </div>
+  </div>
+
+  <!-- Data Display -->
+  <div class="data-container" id="data-container">
+    <!-- Las tarjetas de datos se generarán dinámicamente -->
+  </div>
+</div>
+
+<!-- Refresh Button -->
+<button class="refresh-btn" onclick="loadData()" title="Actualizar datos">
+  🔄
+</button>
+
+<script>
+// Función para mostrar el username
+function displayUsername() {
+  try {
+    const userDataString = localStorage.getItem('userData');
+    if (!userDataString) return;
+
+    const userData = JSON.parse(userDataString);
+    const usernameDisplay = document.getElementById('username-display');
+
+    if (usernameDisplay && userData && userData.username) {
+      usernameDisplay.textContent = ', ' + userData.username;
+    }
+  } catch (error) {
+    console.error('Error displaying username:', error);
+  }
+}
+
+// Función para actualizar el indicador de estado
+function updateStatus(type, message) {
+  const statusIndicator = document.getElementById('status-indicator');
+  statusIndicator.className = `status-indicator status-${type}`;
+
+  if (type === 'loading') {
+    statusIndicator.innerHTML = `<span class="loading-spinner"></span>${message}`;
+  } else {
+    statusIndicator.textContent = message;
+  }
+}
+
+// Función para crear las tarjetas de datos
+function createDataCards(data) {
+  const container = document.getElementById('data-container');
+
+  container.innerHTML = `
+    <div class="data-card">
+      <div class="data-icon">⚡</div>
+      <div class="data-label">Corriente 1</div>
+      <div class="data-value">${data.corriente1}</div>
+      <div class="data-unit">Amperios</div>
+    </div>
+
+    <div class="data-card">
+      <div class="data-icon">🔌</div>
+      <div class="data-label">Corriente 2</div>
+      <div class="data-value">${data.corriente2}</div>
+      <div class="data-unit">Amperios</div>
+    </div>
+
+    <div class="timestamp-card">
+      <div class="timestamp-label">Última actualización</div>
+      <div class="timestamp-value">${formatTimestamp(data.timestamp)}</div>
+    </div>
+  `;
+}
+
+// Función para formatear el timestamp
+function formatTimestamp(timestamp) {
+  try {
+    const date = new Date(timestamp);
+    return date.toLocaleString('es-AR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
     });
-  </script>
+  } catch (error) {
+    return timestamp;
+  }
+}
+
+// Función para cargar los datos
+function loadData() {
+  updateStatus('loading', 'Cargando datos...');
+
+  // Obtener el token de autenticación
+  const token = localStorage.getItem("authToken");
+
+  if (!token) {
+    updateStatus('error', 'Error: No se encontró token de autenticación');
+    document.getElementById('data-container').innerHTML = `
+      <div class="data-card" style="grid-column: 1 / -1;">
+        <div class="data-icon">❌</div>
+        <div class="data-label">Error de Autenticación</div>
+        <div style="color: #c0392b; font-size: 1.1rem; margin-top: 15px;">
+          Por favor, inicie sesión nuevamente
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  fetch('/api/corrientes/current', {
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      updateStatus('success', 'Datos actualizados correctamente');
+      createDataCards(data.data);
+    } else {
+      throw new Error('No se pudieron obtener los datos del servidor');
+    }
+  })
+  .catch(error => {
+    console.error('Error al obtener los datos:', error);
+    updateStatus('error', 'Error al cargar los datos');
+
+    document.getElementById('data-container').innerHTML = `
+      <div class="data-card" style="grid-column: 1 / -1;">
+        <div class="data-icon">⚠️</div>
+        <div class="data-label">Error de Conexión</div>
+        <div style="color: #c0392b; font-size: 1.1rem; margin-top: 15px;">
+          ${error.message}
+        </div>
+        <div style="margin-top: 15px;">
+          <button onclick="loadData()" style="background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer;">
+            Reintentar
+          </button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// Función de logout
+function logout() {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('userData');
+  window.location.href = 'inicio.html';
+}
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+  displayUsername();
+  loadData();
+
+  // Auto-refresh cada 30 segundos
+  setInterval(loadData, 30000);
+});
+</script>
 </body>
 </html>
