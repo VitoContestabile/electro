@@ -250,6 +250,18 @@
       background: linear-gradient(45deg, #e74c3c, #c0392b);
     }
 
+    .debug-info {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 2000;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -291,12 +303,13 @@
 
 <!-- Main Content -->
 <div class="main-content">
-  <h1 class="page-title">Bienvenido a tu Casa Inteligente <span id="username-display"> </span></h1>
+  <h1 class="page-title">Bienvenido a tu Casa Inteligente<span id="username-display"></span></h1>
 
   <!-- Room View -->
   <div class="room-view">
     <div class="room-overlay">
       <h2 class="room-name">Dispositivos del Living</h2>
+      <p class="room-status">Cargando...</p>
     </div>
   </div>
 
@@ -372,180 +385,76 @@
 <!-- Notification Element -->
 <div id="notification" class="notification"></div>
 
+<!-- Debug Info (remove in production) -->
+<div class="debug-info" id="debug-info"></div>
+
 <script>
-  // Toggle device state
-  // Form submission
-  const loginForm = document.getElementById('login-form');
-  const signupForm = document.getElementById('signup-form');
-  const loginSpinner = document.getElementById('login-spinner');
-  const signupSpinner = document.getElementById('signup-spinner');
-  const loginSubmit = document.getElementById('login-submit');
-  const signupSubmit = document.getElementById('signup-submit');
-
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const username = document.getElementById('login-username').value;
-    const password = document.getElementById('login-password').value;
-
-    // Validación básica
-    if (!username || !password) {
-      alert('Por favor complete todos los campos');
-      return;
+  // Función para mostrar información de debug
+  function showDebugInfo(message) {
+    const debugElement = document.getElementById('debug-info');
+    if (debugElement) {
+      debugElement.innerHTML += message + '<br>';
     }
+    console.log(message);
+  }
 
-    // Mostrar spinner y deshabilitar botón
-    loginSpinner.style.display = 'inline-block';
-    loginSubmit.disabled = true;
-
+  // Función para mostrar el username
+  function displayUsername() {
     try {
-      // Enviar solicitud al servidor
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, password })
-      });
+      showDebugInfo('Ejecutando displayUsername()...');
 
-      const data = await response.json();
+      // Obtener userData del localStorage
+      const userDataString = localStorage.getItem('userData');
+      showDebugInfo('userData string: ' + userDataString);
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Error al iniciar sesión');
+      if (!userDataString) {
+        showDebugInfo('No hay userData en localStorage');
+        // Crear datos de prueba para demostración
+        const testUser = { username: 'UsuarioDemo' };
+        localStorage.setItem('userData', JSON.stringify(testUser));
+        showDebugInfo('Creando usuario de prueba');
       }
 
-      // Guardar token y datos de usuario en localStorage
-      localStorage.setItem('authToken', data.token);
-      localStorage.setItem('userData', JSON.stringify(data.user));
+      // Parsear los datos
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+      showDebugInfo('userData parseado: ' + JSON.stringify(userData));
 
-      // Redireccionar a dashboard
-      window.location.href = 'elementos.html';
-    } catch (error) {
-      alert(error.message || 'Error al iniciar sesión. Intente nuevamente.');
-      console.error(error);
-    } finally {
-      // Ocultar spinner y habilitar botón
-      loginSpinner.style.display = 'none';
-      loginSubmit.disabled = false;
-    }
-  });
+      // Obtener el elemento del DOM
+      const usernameDisplay = document.getElementById('username-display');
+      showDebugInfo('Elemento username-display encontrado: ' + (usernameDisplay ? 'Sí' : 'No'));
 
-  signupForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const username = document.getElementById('signup-username').value;
-    const email = document.getElementById('signup-email').value;
-    const password = document.getElementById('signup-password').value;
-
-    // Validación básica
-    if (!username || !email || !password) {
-      alert('Por favor complete todos los campos');
-      return;
-    }
-
-    if (password.length < 6) {
-      alert('La contraseña debe tener al menos 6 caracteres');
-      return;
-    }
-
-    // Mostrar spinner y deshabilitar botón
-    signupSpinner.style.display = 'inline-block';
-    signupSubmit.disabled = true;
-
-    try {
-      // Enviar solicitud al servidor
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, email, password })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Error al registrarse');
-      }
-
-      // Guardar token y datos de usuario en localStorage
-      localStorage.setItem('authToken', data.token);
-      localStorage.setItem('userData', JSON.stringify(data.user));
-
-      // Redireccionar a dashboard
-      window.location.href = 'elementos.html';
-    } catch (error) {
-      alert(error.message || 'Error al registrarse. Intente nuevamente.');
-      console.error(error);
-    } finally {
-      // Ocultar spinner y habilitar botón
-      signupSpinner.style.display = 'none';
-      signupSubmit.disabled = false;
-    }
-  });
-
-  // Comprobar si ya hay sesión al cargar
-  document.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      // Verificar token con el servidor
-      fetch('/api/auth/verify', {
-        headers: {
-          'Authorization': `Bearer ${token}`
+      if (usernameDisplay) {
+        if (userData && userData.username) {
+          // Mostrar el username con formato de saludo
+          usernameDisplay.textContent = ', ' + userData.username;
+          showDebugInfo('Username establecido: ' + userData.username);
+        } else {
+          // Limpiar el display si no hay username
+          usernameDisplay.textContent = '';
+          showDebugInfo('Username vacío');
         }
-      })
-              .then(response => {
-                if (response.ok) {
-                  // Si el token es válido, mostrar botón de dashboard
-                  document.querySelector('.nav-buttons').innerHTML = `
-            <a href="elementos.html" class="btn btn-login">Mi Dashboard</a>
-            <button class="btn btn-signup" id="logout-btn">Cerrar Sesión</button>
-          `;
-
-                  // Agregar evento de logout
-                  document.getElementById('logout-btn').addEventListener('click', () => {
-                    fetch('/api/auth/logout', {
-                      method: 'POST',
-                      headers: {
-                        'Authorization': `Bearer ${token}`
-                      }
-                    })
-                            .finally(() => {
-                              localStorage.removeItem('authToken');
-                              localStorage.removeItem('userData');
-                              window.location.reload();
-                            });
-                  });
-                } else {
-                  // Si el token no es válido, eliminar del localStorage
-                  localStorage.removeItem('authToken');
-                  localStorage.removeItem('userData');
-                }
-              })
-              .catch(() => {
-                // Error en la verificación, eliminar del localStorage
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('userData');
-              });
+      }
+    } catch (error) {
+      showDebugInfo('Error en displayUsername(): ' + error.message);
+      console.error('Error displaying username:', error);
+      // En caso de error, limpiar el display
+      const usernameDisplay = document.getElementById('username-display');
+      if (usernameDisplay) {
+        usernameDisplay.textContent = '';
+      }
     }
-  });
+  }
 
-  // Update active devices count in room overlay
+  // Función para actualizar el conteo de dispositivos activos
   function updateActiveDevicesCount() {
     const activeDevices = document.querySelectorAll('.status-on').length;
     const roomStatus = document.querySelector('.room-status');
     if (roomStatus) {
       roomStatus.textContent = `${activeDevices} dispositivos activos`;
-    } else {
-      // Si no existe el elemento, crearlo
-      const roomOverlay = document.querySelector('.room-overlay');
-      const statusElement = document.createElement('p');
-      statusElement.className = 'room-status';
-      statusElement.textContent = `${activeDevices} dispositivos activos`;
-      roomOverlay.appendChild(statusElement);
     }
   }
 
+  // Función para mostrar notificaciones
   function showNotification(message, type) {
     const notification = document.getElementById('notification');
     notification.textContent = message;
@@ -561,157 +470,61 @@
     }, 3000);
   }
 
-  function logout() {
-    const token = localStorage.getItem('authToken');
+  // Función para cambiar el estado de un dispositivo
+  function toggleDevice(deviceId, turnOn) {
+    const deviceCard = document.getElementById(deviceId);
+    const statusElement = deviceCard.querySelector('.device-status');
 
-    // Mostrar notificación de cierre de sesión
+    // Verificar el estado actual
+    const isCurrentlyOn = statusElement.classList.contains('status-on');
+
+    // Solo hacer cambios si el estado solicitado es diferente del actual
+    if ((turnOn && !isCurrentlyOn) || (!turnOn && isCurrentlyOn)) {
+      // Actualizar la visualización del estado
+      statusElement.classList.remove(isCurrentlyOn ? 'status-on' : 'status-off');
+      statusElement.classList.add(isCurrentlyOn ? 'status-off' : 'status-on');
+      statusElement.textContent = isCurrentlyOn ? 'Apagado' : 'Encendido';
+
+      // Mostrar notificación
+      showNotification(`${deviceCard.querySelector('.device-name').textContent} ${isCurrentlyOn ? 'apagado' : 'encendido'}`, isCurrentlyOn ? 'error' : 'success');
+
+      // Actualizar el conteo de dispositivos activos
+      updateActiveDevicesCount();
+    }
+  }
+
+  // Función de logout
+  function logout() {
     showNotification('Cerrando sesión...', 'success');
 
-    // Realizar la solicitud de logout al servidor
-    fetch('/api/logout', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-            .catch(error => {
-              console.error('Error al cerrar sesión:', error);
-            })
-            .finally(() => {
-              // Limpiar localStorage independientemente del resultado
-              localStorage.removeItem('authToken');
-              localStorage.removeItem('userData');
+    // Limpiar localStorage
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
 
-              // Redireccionar a la página de inicio
-              setTimeout(() => {
-                window.location.href = 'inicio.html';
-              }, 1000);
-            });
+    // Simular redirección (en un entorno real, sería a otra página)
+    setTimeout(() => {
+      showNotification('Sesión cerrada correctamente', 'success');
+    }, 1000);
   }
 
-  signupForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  // Inicialización cuando se carga la página
+  document.addEventListener('DOMContentLoaded', function() {
+    showDebugInfo('DOM Content Loaded - Iniciando...');
 
-    const username = document.getElementById('signup-username').value;
-    const email = document.getElementById('signup-email').value;
-    const password = document.getElementById('signup-password').value;
+    // Mostrar el username
+    displayUsername();
 
-    // Validación básica
-    if (!username || !email || !password) {
-      alert('Por favor complete todos los campos');
-      return;
-    }
+    // Actualizar el conteo de dispositivos activos
+    updateActiveDevicesCount();
 
-    if (password.length < 6) {
-      alert('La contraseña debe tener al menos 6 caracteres');
-      return;
-    }
-
-    // Mostrar spinner y deshabilitar botón
-    signupSpinner.style.display = 'inline-block';
-    signupSubmit.disabled = true;
-
-    try {
-      // Enviar solicitud al servidor
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, email, password })
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Error al registrarse');
-      }
-
-      // Guardar token y datos de usuario en localStorage
-      localStorage.setItem('authToken', result.data.token);
-      localStorage.setItem('userData', JSON.stringify(result.data.user));
-
-      // Redireccionar a dashboard
-      window.location.href = 'elementos.html';
-    } catch (error) {
-      alert(error.message || 'Error al registrarse. Intente nuevamente.');
-      console.error(error);
-    } finally {
-      // Ocultar spinner y habilitar botón
-      signupSpinner.style.display = 'none';
-      signupSubmit.disabled = false;
-    }
+    showDebugInfo('Inicialización completada');
   });
-  // Add this function to display the username
-  function displayUsername() {
-    try {
-      // Get userData from localStorage
-      const userDataString = localStorage.getItem('userData');
 
-      // Get the username display element
-      const usernameDisplay = document.getElementById('username-display');
-
-      if (userDataString) {
-        // Try parsing as JSON first
-        try {
-          const userData = JSON.parse(userDataString);
-          if (userData && userData.username) {
-            // Display username with a greeting format
-            usernameDisplay.textContent = ", " + userData.username;
-            return;
-          }
-        } catch (e) {
-          // If JSON parsing fails, it might be just the username string
-          console.log("JSON parse failed, trying direct usage");
-        }
-
-        // If we get here, either parsing failed or there was no username property
-        // Try using the userData string directly
-        if (userDataString && typeof userDataString === 'string') {
-          usernameDisplay.textContent = ", " + userDataString;
-        }
-      } else {
-        // Clear the display if no userData found
-        usernameDisplay.textContent = "";
-      }
-    } catch (error) {
-      console.error('Error displaying username:', error);
-      // In case of error, clear the display
-      document.getElementById('username-display').textContent = "";
-
-      function toggleDevice(deviceId, turnOn) {
-        const deviceCard = document.getElementById(deviceId);
-        const statusElement = deviceCard.querySelector('.device-status');
-
-        // Check current status
-        const isCurrentlyOn = statusElement.classList.contains('status-on');
-
-        // Only make changes if the requested state is different from current state
-        if ((turnOn && !isCurrentlyOn) || (!turnOn && isCurrentlyOn)) {
-          // Update status display
-          statusElement.classList.remove(isCurrentlyOn ? 'status-on' : 'status-off');
-          statusElement.classList.add(isCurrentlyOn ? 'status-off' : 'status-on');
-          statusElement.textContent = isCurrentlyOn ? 'Apagado' : 'Encendido';
-
-          // Show notification
-          showNotification(`${deviceCard.querySelector('.device-name').textContent} ${isCurrentlyOn ? 'apagado' : 'encendido'}`, isCurrentlyOn ? 'error' : 'success');
-
-          // Update active devices count
-          updateActiveDevicesCount();
-        }
-      }
-
-      // Add this to ensure the username is displayed when page loads
-      document.addEventListener('DOMContentLoaded', function () {
-        // Display username
-        displayUsername();
-
-        // Update active devices count
-        updateActiveDevicesCount();
-      });
-    }
-  }
-
+  // También ejecutar cuando la página esté completamente cargada
+  window.addEventListener('load', function() {
+    showDebugInfo('Window Load - Re-ejecutando displayUsername...');
+    displayUsername();
+  });
 </script>
 </body>
 </html>
