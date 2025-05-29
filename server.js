@@ -4,12 +4,11 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const app = express();
 const cors = require('cors');
-const path = require('path');
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 app.use(cors());
 
-// Configuración JWT
+// Configuración JWTa
 const JWT_SECRET = 'tu_clave_secreta_super_segura_cambiala_en_produccion';
 const JWT_EXPIRES_IN = '24h';
 
@@ -24,25 +23,25 @@ const db = new Client({
 
 // Conectar a la base de datos
 db.connect()
-    .then(() => {
-      console.log('✅ Conectado a PostgreSQL');
-      initializeDatabase();
-    })
-    .catch(err => {
-      console.error('❌ Error conectando a PostgreSQL:', err);
-    });
+  .then(() => {
+    console.log('✅ Conectado a PostgreSQL');
+    initializeDatabase();
+  })
+  .catch(err => {
+    console.error('❌ Error conectando a PostgreSQL:', err);
+  });
 
 // Crear tabla de usuarios si no existe
 async function initializeDatabase() {
   try {
     await db.query(`
       CREATE TABLE IF NOT EXISTS users (
-                                         id SERIAL PRIMARY KEY,
-                                         username VARCHAR(50) UNIQUE NOT NULL,
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(50) UNIQUE NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
+      )
     `);
     console.log('✅ Tabla de usuarios lista');
   } catch (error) {
@@ -102,8 +101,8 @@ app.post('/api/register', async (req, res) => {
 
     // Verificar si el usuario ya existe
     const existingUser = await db.query(
-        'SELECT id FROM users WHERE username = $1 OR email = $2',
-        [username, email]
+      'SELECT id FROM users WHERE username = $1 OR email = $2',
+      [username, email]
     );
 
     if (existingUser.rows.length > 0) {
@@ -119,21 +118,21 @@ app.post('/api/register', async (req, res) => {
 
     // Insertar nuevo usuario
     const result = await db.query(
-        'INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id, username, email, created_at',
-        [username, email, passwordHash]
+      'INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id, username, email, created_at',
+      [username, email, passwordHash]
     );
 
     const newUser = result.rows[0];
 
     // Generar JWT
     const token = jwt.sign(
-        {
-          userId: newUser.id,
-          username: newUser.username,
-          email: newUser.email
-        },
-        JWT_SECRET,
-        { expiresIn: JWT_EXPIRES_IN }
+      {
+        userId: newUser.id,
+        username: newUser.username,
+        email: newUser.email
+      },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
     );
 
     res.status(201).json({
@@ -174,8 +173,8 @@ app.post('/api/login', async (req, res) => {
 
     // Buscar usuario (por username o email)
     const result = await db.query(
-        'SELECT id, username, email, password_hash, created_at FROM users WHERE username = $1 OR email = $1',
-        [username]
+      'SELECT id, username, email, password_hash, created_at FROM users WHERE username = $1 OR email = $1',
+      [username]
     );
 
     if (result.rows.length === 0) {
@@ -199,13 +198,13 @@ app.post('/api/login', async (req, res) => {
 
     // Generar JWT
     const token = jwt.sign(
-        {
-          userId: user.id,
-          username: user.username,
-          email: user.email
-        },
-        JWT_SECRET,
-        { expiresIn: JWT_EXPIRES_IN }
+      {
+        userId: user.id,
+        username: user.username,
+        email: user.email
+      },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
     );
 
     res.json({
@@ -237,8 +236,8 @@ app.post('/api/login', async (req, res) => {
 app.get('/api/profile', authenticateToken, async (req, res) => {
   try {
     const result = await db.query(
-        'SELECT id, username, email, created_at FROM users WHERE id = $1',
-        [req.user.userId]
+      'SELECT id, username, email, created_at FROM users WHERE id = $1',
+      [req.user.userId]
     );
 
     if (result.rows.length === 0) {
@@ -279,68 +278,6 @@ app.get('/api/verify-token', authenticateToken, (req, res) => {
   });
 });
 
-// Obtener dispositivos del usuario
-app.get('/api/user-devices', authenticateToken, async (req, res) => {
-  try {
-    // En una implementación real, obtendríamos los dispositivos asociados al usuario desde la base de datos
-    // Por ahora, devolvemos un mock
-    const mockDevices = {
-      'fridge': true,
-      'lights': true,
-      'microwave': false,
-      'fan': false,
-      'tv': false,
-      'heater': false
-    };
-
-    res.json({
-      success: true,
-      message: 'Dispositivos obtenidos correctamente',
-      data: {
-        devices: mockDevices
-      }
-    });
-  } catch (error) {
-    console.error('Error obteniendo dispositivos:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error interno del servidor'
-    });
-  }
-});
-
-// Actualizar estado de dispositivo
-app.post('/api/toggle-device', authenticateToken, async (req, res) => {
-  try {
-    const { deviceId, status } = req.body;
-
-    if (!deviceId || status === undefined) {
-      return res.status(400).json({
-        success: false,
-        message: 'Se requiere ID del dispositivo y estado'
-      });
-    }
-
-    // En una implementación real, actualizaríamos el estado en la base de datos
-    // Por ahora, solo devolvemos confirmación
-
-    res.json({
-      success: true,
-      message: `Dispositivo ${deviceId} ${status ? 'encendido' : 'apagado'} correctamente`,
-      data: {
-        deviceId,
-        status
-      }
-    });
-  } catch (error) {
-    console.error('Error actualizando dispositivo:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error interno del servidor'
-    });
-  }
-});
-
 // --- OTRAS RUTAS ---
 
 // Ruta de prueba de DB
@@ -360,82 +297,6 @@ app.get('/api/test-db', async (req, res) => {
       error: error.message
     });
   }
-});
-
-// Ruta para compatibilidad con el cliente (signup)
-app.post('/api/signup', async (req, res) => {
-  // Redirigir a register
-  try {
-    const { username, email, password } = req.body;
-
-    // Validaciones básicas
-    if (!username || !email || !password) {
-      return res.status(400).json({
-        message: 'Username, email y password son requeridos'
-      });
-    }
-
-    if (password.length < 6) {
-      return res.status(400).json({
-        message: 'La contraseña debe tener al menos 6 caracteres'
-      });
-    }
-
-    // Verificar si el usuario ya existe
-    const existingUser = await db.query(
-        'SELECT id FROM users WHERE username = $1 OR email = $2',
-        [username, email]
-    );
-
-    if (existingUser.rows.length > 0) {
-      return res.status(409).json({
-        message: 'Usuario o email ya registrado'
-      });
-    }
-
-    // Hashear la contraseña
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
-
-    // Insertar nuevo usuario
-    const result = await db.query(
-        'INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id, username, email, created_at',
-        [username, email, passwordHash]
-    );
-
-    const newUser = result.rows[0];
-
-    // Generar JWT
-    const token = jwt.sign(
-        {
-          userId: newUser.id,
-          username: newUser.username,
-          email: newUser.email
-        },
-        JWT_SECRET,
-        { expiresIn: JWT_EXPIRES_IN }
-    );
-
-    res.status(201).json({
-      message: 'Usuario registrado exitosamente',
-      user: {
-        id: newUser.id,
-        username: newUser.username,
-        email: newUser.email
-      },
-      token
-    });
-  } catch (error) {
-    console.error('Error en registro:', error);
-    res.status(500).json({
-      message: 'Error interno del servidor'
-    });
-  }
-});
-
-// Default route to serve the frontend
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'inicio.html'));
 });
 
 // Manejo de cierre graceful
