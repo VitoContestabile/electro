@@ -10,7 +10,7 @@ const PORT = 3000;
 
 app.use(cors());
 
-// Configuración JWTa
+// Configuración JWT
 const JWT_SECRET = 'tu_clave_secreta_super_segura_cambiala_en_produccion';
 const JWT_EXPIRES_IN = '24h';
 
@@ -28,7 +28,6 @@ let ultimaCorriente1 = null;
 let ultimaCorriente2 = null;
 let tiempoUltimoInsert = 0;
 const intervaloInsercion = 5000; // 5 segundos
-
 
 // Conectar a la base de datos
 db.connect()
@@ -147,79 +146,6 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
-
-// --- ENDPOINTS DE CORRIENTES (PROTEGIDOS) ---
-
-// Obtener datos actuales de corriente
-app.get('/api/corrientes/current', authenticateToken, (req, res) => {
-  res.json({
-    success: true,
-    data: {
-      corriente1: ultimaCorriente1,
-      corriente2: ultimaCorriente2,
-      timestamp: new Date().toISOString()
-    }
-  });
-});
-
-// Obtener historial de corrientes
-app.get('/api/corrientes/history', authenticateToken, async (req, res) => {
-  try {
-    const { limit = 100, offset = 0 } = req.query;
-
-    const result = await db.query(
-      'SELECT * FROM corrientes ORDER BY fecha DESC LIMIT $1 OFFSET $2',
-      [parseInt(limit), parseInt(offset)]
-    );
-
-    res.json({
-      success: true,
-      data: {
-        records: result.rows,
-        total: result.rowCount
-      }
-    });
-
-  } catch (error) {
-    console.error('Error obteniendo historial de corrientes:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error interno del servidor'
-    });
-  }
-});
-
-// Obtener estadísticas de corrientes
-app.get('/api/corrientes/stats', authenticateToken, async (req, res) => {
-  try {
-    const result = await db.query(`
-      SELECT 
-        COUNT(*) as total_registros,
-        AVG(corriente1) as promedio_corriente1,
-        AVG(corriente2) as promedio_corriente2,
-        MAX(corriente1) as max_corriente1,
-        MAX(corriente2) as max_corriente2,
-        MIN(corriente1) as min_corriente1,
-        MIN(corriente2) as min_corriente2,
-        MIN(fecha) as primer_registro,
-        MAX(fecha) as ultimo_registro
-      FROM corrientes
-    `);
-
-    res.json({
-      success: true,
-      data: result.rows[0]
-    });
-
-  } catch (error) {
-    console.error('Error obteniendo estadísticas:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error interno del servidor'
-    });
-  }
-});
-
 
 // --- ENDPOINTS DE AUTENTICACIÓN ---
 
@@ -374,7 +300,79 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// --- RUTAS PROTEGIDAS ---
+// --- ENDPOINTS DE CORRIENTES (PROTEGIDOS) ---
+
+// Obtener datos actuales de corriente
+app.get('/api/corrientes/current', authenticateToken, (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      corriente1: ultimaCorriente1,
+      corriente2: ultimaCorriente2,
+      timestamp: new Date().toISOString()
+    }
+  });
+});
+
+// Obtener historial de corrientes
+app.get('/api/corrientes/history', authenticateToken, async (req, res) => {
+  try {
+    const { limit = 100, offset = 0 } = req.query;
+
+    const result = await db.query(
+      'SELECT * FROM corrientes ORDER BY fecha DESC LIMIT $1 OFFSET $2',
+      [parseInt(limit), parseInt(offset)]
+    );
+
+    res.json({
+      success: true,
+      data: {
+        records: result.rows,
+        total: result.rowCount
+      }
+    });
+
+  } catch (error) {
+    console.error('Error obteniendo historial de corrientes:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+// Obtener estadísticas de corrientes
+app.get('/api/corrientes/stats', authenticateToken, async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT 
+        COUNT(*) as total_registros,
+        AVG(corriente1) as promedio_corriente1,
+        AVG(corriente2) as promedio_corriente2,
+        MAX(corriente1) as max_corriente1,
+        MAX(corriente2) as max_corriente2,
+        MIN(corriente1) as min_corriente1,
+        MIN(corriente2) as min_corriente2,
+        MIN(fecha) as primer_registro,
+        MAX(fecha) as ultimo_registro
+      FROM corrientes
+    `);
+
+    res.json({
+      success: true,
+      data: result.rows[0]
+    });
+
+  } catch (error) {
+    console.error('Error obteniendo estadísticas:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+// --- RUTAS PROTEGIDAS ORIGINALES ---
 
 // Perfil de usuario (requiere autenticación)
 app.get('/api/profile', authenticateToken, async (req, res) => {
@@ -446,8 +444,17 @@ app.get('/api/test-db', async (req, res) => {
 // Manejo de cierre graceful
 process.on('SIGINT', async () => {
   console.log('\n🔄 Cerrando servidor...');
+
+  // Cerrar conexión MQTT
+  if (mqttClient) {
+    mqttClient.end();
+    console.log('✅ Conexión MQTT cerrada');
+  }
+
+  // Cerrar conexión DB
   await db.end();
   console.log('✅ Conexión a DB cerrada');
+
   process.exit(0);
 });
 

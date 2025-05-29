@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Corrientes</title>
+</head>
+<body>
+  <h1>Lectura de Corrientes</h1>
+  <div id="output">Cargando datos...</div>
+
+  <script>
+    // Suponiendo que tenés un token JWT guardado
+    const token = localStorage.getItem("authToken")// reemplazá esto con el real
+
+    fetch('/api/corrientes/current', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    })
+    .then(response => {
+      if (!response.ok) throw new Error("Error en la respuesta del servidor");
+      return response.json();
+    })
+    .then(data => {
+      const div = document.getElementById('output');
+      if (data.success) {
+        div.innerHTML = `
+          <p><strong>Corriente 1:</strong> ${data.data.corriente1}</p>
+          <p><strong>Corriente 2:</strong> ${data.data.corriente2}</p>
+          <p><strong>Timestamp:</strong> ${data.data.timestamp}</p>
+        `;
+      } else {
+        div.innerText = "Error: no se pudieron obtener los datos.";
+      }
+    })
+    .catch(error => {
+      document.getElementById('output').innerText = 'Error al obtener los datos: ' + error.message;
+    });
+  </script>
+</body>
+</html>
