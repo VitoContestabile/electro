@@ -294,6 +294,55 @@
       border-color: rgba(255, 255, 255, 0.8);
     }
 
+    /* Auto-refresh indicator */
+    .auto-refresh-indicator {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 15px;
+      font-size: 0.9rem;
+      margin-right: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .refresh-dot {
+      width: 8px;
+      height: 8px;
+      background: #2ecc71;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    .refresh-toggle {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      padding: 6px 12px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-right: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .refresh-toggle:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .refresh-toggle.active {
+      background: rgba(46, 204, 113, 0.3);
+      border-color: #2ecc71;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -316,6 +365,14 @@
       .device-controls {
         flex-direction: column;
       }
+
+      .nav-links {
+        gap: 15px;
+      }
+
+      .auto-refresh-indicator {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -327,6 +384,13 @@
       🏠 SmartHome
     </div>
     <div class="nav-links">
+      <div class="auto-refresh-indicator" id="autoRefreshIndicator" style="display: none;">
+        <div class="refresh-dot"></div>
+        <span id="refreshCountdown">30s</span>
+      </div>
+      <button class="refresh-toggle" id="refreshToggle" onclick="toggleAutoRefresh()">
+        🔄 Auto
+      </button>
       <button class="refresh-btn" onclick="loadDeviceStates()">🔄 Actualizar</button>
       <a href="consumo.html">Consumo</a>
       <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
@@ -379,6 +443,13 @@
   // API Base URL - ajustar según tu configuración
   const API_BASE_URL = ''; // Cambiar por tu URL del servidor
 
+  // Variables para el auto-refresh
+  let autoRefreshInterval = null;
+  let countdownInterval = null;
+  let autoRefreshEnabled = true; // Habilitado por defecto
+  let countdownSeconds = 30; // Intervalo de 30 segundos
+  const REFRESH_INTERVAL = 30000; // 30 segundos en milisegundos
+
   // Función para obtener el token de autenticación
   function getAuthToken() {
     return localStorage.getItem('authToken');
@@ -426,8 +497,8 @@
     }
   }
 
-  // NUEVA FUNCIÓN: Cargar estado de los dispositivos
-  async function loadDeviceStates() {
+  // FUNCIÓN MEJORADA: Cargar estado de los dispositivos (ahora con indicador silencioso)
+  async function loadDeviceStates(showNotifications = false) {
     try {
       const response = await authenticatedFetch(`${API_BASE_URL}/api/reles/estado`);
 
@@ -450,6 +521,10 @@
         // Habilitar botones
         enableAllButtons();
 
+        if (showNotifications) {
+          showNotification('Estados actualizados', 'success');
+        }
+
         console.log('✅ Estados cargados:', result.data);
       } else {
         throw new Error(result.message || 'Error al obtener estados');
@@ -457,7 +532,10 @@
 
     } catch (error) {
       console.error('Error cargando estados:', error);
-      showNotification(`Error: ${error.message}`, 'error');
+
+      if (showNotifications) {
+        showNotification(`Error: ${error.message}`, 'error');
+      }
 
       // En caso de error, habilitar botones con estado por defecto
       updateDeviceDisplay('microwave', 'OFF');
@@ -466,7 +544,97 @@
     }
   }
 
-  // NUEVA FUNCIÓN: Actualizar visualización de un dispositivo
+  // NUEVA FUNCIÓN: Toggle del auto-refresh
+  function toggleAutoRefresh() {
+    const toggleBtn = document.getElementById('refreshToggle');
+    const indicator = document.getElementById('autoRefreshIndicator');
+
+    autoRefreshEnabled = !autoRefreshEnabled;
+
+    if (autoRefreshEnabled) {
+      // Activar auto-refresh
+      toggleBtn.classList.add('active');
+      toggleBtn.innerHTML = '🔄 Auto ON';
+      indicator.style.display = 'flex';
+      startAutoRefresh();
+      showNotification('Auto-refresh activado (30s)', 'success');
+    } else {
+      // Desactivar auto-refresh
+      toggleBtn.classList.remove('active');
+      toggleBtn.innerHTML = '🔄 Auto OFF';
+      indicator.style.display = 'none';
+      stopAutoRefresh();
+      showNotification('Auto-refresh desactivado', 'success');
+    }
+
+    // Guardar preferencia en localStorage
+    localStorage.setItem('autoRefreshEnabled', autoRefreshEnabled.toString());
+  }
+
+  // NUEVA FUNCIÓN: Iniciar auto-refresh
+  function startAutoRefresh() {
+    // Limpiar intervalos existentes
+    stopAutoRefresh();
+
+    // Resetear contador
+    countdownSeconds = 30;
+
+    // Intervalo para actualizar estados
+    autoRefreshInterval = setInterval(() => {
+      loadDeviceStates(false); // false = no mostrar notificaciones
+      countdownSeconds = 30; // Resetear contador
+    }, REFRESH_INTERVAL);
+
+    // Intervalo para el countdown
+    countdownInterval = setInterval(() => {
+      countdownSeconds--;
+      const countdownElement = document.getElementById('refreshCountdown');
+      if (countdownElement) {
+        countdownElement.textContent = `${countdownSeconds}s`;
+      }
+
+      if (countdownSeconds <= 0) {
+        countdownSeconds = 30;
+      }
+    }, 1000);
+  }
+
+  // NUEVA FUNCIÓN: Detener auto-refresh
+  function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+      clearInterval(autoRefreshInterval);
+      autoRefreshInterval = null;
+    }
+
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
+  }
+
+  // NUEVA FUNCIÓN: Cargar preferencias del auto-refresh
+  function loadAutoRefreshPreferences() {
+    const savedPreference = localStorage.getItem('autoRefreshEnabled');
+    if (savedPreference !== null) {
+      autoRefreshEnabled = savedPreference === 'true';
+    }
+
+    const toggleBtn = document.getElementById('refreshToggle');
+    const indicator = document.getElementById('autoRefreshIndicator');
+
+    if (autoRefreshEnabled) {
+      toggleBtn.classList.add('active');
+      toggleBtn.innerHTML = '🔄 Auto ON';
+      indicator.style.display = 'flex';
+      startAutoRefresh();
+    } else {
+      toggleBtn.classList.remove('active');
+      toggleBtn.innerHTML = '🔄 Auto OFF';
+      indicator.style.display = 'none';
+    }
+  }
+
+  // FUNCIÓN ACTUALIZADA: Actualizar visualización de un dispositivo
   function updateDeviceDisplay(deviceId, estado) {
     const deviceCard = document.getElementById(deviceId);
     const statusElement = deviceCard.querySelector('.device-status');
@@ -483,7 +651,7 @@
     }
   }
 
-  // NUEVA FUNCIÓN: Habilitar todos los botones
+  // FUNCIÓN EXISTENTE: Habilitar todos los botones
   function enableAllButtons() {
     const buttons = document.querySelectorAll('.btn-control');
     buttons.forEach(btn => {
@@ -537,7 +705,7 @@
     }, 3000);
   }
 
-  // Función para cambiar el estado de un dispositivo
+  // FUNCIÓN ACTUALIZADA: Cambiar el estado de un dispositivo (resetea el countdown)
   async function toggleDevice(deviceId, turnOn) {
     const deviceCard = document.getElementById(deviceId);
     const statusElement = deviceCard.querySelector('.device-status');
@@ -588,9 +756,14 @@
         // Actualizar el conteo de dispositivos activos
         updateActiveDevicesCount();
 
+        // Resetear el countdown del auto-refresh si está activo
+        if (autoRefreshEnabled) {
+          countdownSeconds = 30;
+        }
+
         // Recargar estados después de un breve delay para confirmar
         setTimeout(() => {
-          loadDeviceStates();
+          loadDeviceStates(false);
         }, 1000);
 
       } else {
@@ -613,13 +786,17 @@
     }
   }
 
-  // Función de logout
+  // Función de logout (limpia los intervalos)
   function logout() {
     showNotification('Cerrando sesión...', 'success');
+
+    // Detener auto-refresh
+    stopAutoRefresh();
 
     // Limpiar localStorage
     localStorage.removeItem('authToken');
     localStorage.removeItem('userData');
+    localStorage.removeItem('autoRefreshEnabled');
 
     setTimeout(() => {
       window.location.href = 'inicio.html';
@@ -636,7 +813,7 @@
     return true;
   }
 
-  // Inicialización cuando se carga la página
+  // FUNCIÓN ACTUALIZADA: Inicialización cuando se carga la página
   document.addEventListener('DOMContentLoaded', function() {
     // Verificar autenticación
     if (!checkAuthentication()) {
@@ -646,14 +823,35 @@
     // Mostrar el username
     displayUsername();
 
-    // Cargar estados de los dispositivos
-    loadDeviceStates();
+    // Cargar preferencias del auto-refresh
+    loadAutoRefreshPreferences();
+
+    // Cargar estados de los dispositivos (primera carga con notificación)
+    loadDeviceStates(true);
   });
 
   // También ejecutar cuando la página esté completamente cargada
   window.addEventListener('load', function() {
     if (checkAuthentication()) {
       displayUsername();
+    }
+  });
+
+  // Limpiar intervalos cuando se cierra/recarga la página
+  window.addEventListener('beforeunload', function() {
+    stopAutoRefresh();
+  });
+
+  // Pausar auto-refresh cuando la página no está visible
+  document.addEventListener('visibilitychange', function() {
+    if (autoRefreshEnabled) {
+      if (document.hidden) {
+        stopAutoRefresh();
+      } else {
+        startAutoRefresh();
+        // Cargar estados inmediatamente al volver a la página
+        loadDeviceStates(false);
+      }
     }
   });
 </script>
