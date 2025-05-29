@@ -386,7 +386,7 @@
     <div class="nav-links">
       <div class="auto-refresh-indicator" id="autoRefreshIndicator" style="display: none;">
         <div class="refresh-dot"></div>
-        <span id="refreshCountdown">30s</span>
+        <span id="refreshCountdown">10s</span>
       </div>
       <button class="refresh-toggle" id="refreshToggle" onclick="toggleAutoRefresh()">
         🔄 Auto
@@ -447,8 +447,8 @@
   let autoRefreshInterval = null;
   let countdownInterval = null;
   let autoRefreshEnabled = true; // Habilitado por defecto
-  let countdownSeconds = 30; // Intervalo de 30 segundos
-  const REFRESH_INTERVAL = 30000; // 30 segundos en milisegundos
+  let countdownSeconds = 10; // Intervalo de 30 segundos
+  const REFRESH_INTERVAL = 10000; // 30 segundos en milisegundos
 
   // Función para obtener el token de autenticación
   function getAuthToken() {
@@ -557,7 +557,7 @@
       toggleBtn.innerHTML = '🔄 Auto ON';
       indicator.style.display = 'flex';
       startAutoRefresh();
-      showNotification('Auto-refresh activado (30s)', 'success');
+      showNotification('Auto-refresh activado (10s)', 'success');
     } else {
       // Desactivar auto-refresh
       toggleBtn.classList.remove('active');
@@ -577,12 +577,12 @@
     stopAutoRefresh();
 
     // Resetear contador
-    countdownSeconds = 30;
+    countdownSeconds = 10;
 
     // Intervalo para actualizar estados
     autoRefreshInterval = setInterval(() => {
       loadDeviceStates(false); // false = no mostrar notificaciones
-      countdownSeconds = 30; // Resetear contador
+      countdownSeconds = 10; // Resetear contador
     }, REFRESH_INTERVAL);
 
     // Intervalo para el countdown
@@ -594,7 +594,7 @@
       }
 
       if (countdownSeconds <= 0) {
-        countdownSeconds = 30;
+        countdownSeconds =10;
       }
     }, 1000);
   }
