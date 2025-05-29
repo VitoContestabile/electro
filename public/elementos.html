@@ -680,34 +680,37 @@
       document.getElementById('username-display').textContent = "";
 
       function toggleDevice(deviceId, turnOn) {
-    const deviceCard = document.getElementById(deviceId);
-    const statusElement = deviceCard.querySelector('.device-status');
+        const deviceCard = document.getElementById(deviceId);
+        const statusElement = deviceCard.querySelector('.device-status');
 
-    // Check current status
-    const isCurrentlyOn = statusElement.classList.contains('status-on');
+        // Check current status
+        const isCurrentlyOn = statusElement.classList.contains('status-on');
 
-    // Only make changes if the requested state is different from current state
-    if ((turnOn && !isCurrentlyOn) || (!turnOn && isCurrentlyOn)) {
-      // Update status display
-      statusElement.classList.remove(isCurrentlyOn ? 'status-on' : 'status-off');
-      statusElement.classList.add(isCurrentlyOn ? 'status-off' : 'status-on');
-      statusElement.textContent = isCurrentlyOn ? 'Apagado' : 'Encendido';
+        // Only make changes if the requested state is different from current state
+        if ((turnOn && !isCurrentlyOn) || (!turnOn && isCurrentlyOn)) {
+          // Update status display
+          statusElement.classList.remove(isCurrentlyOn ? 'status-on' : 'status-off');
+          statusElement.classList.add(isCurrentlyOn ? 'status-off' : 'status-on');
+          statusElement.textContent = isCurrentlyOn ? 'Apagado' : 'Encendido';
 
-      // Show notification
-      showNotification(`${deviceCard.querySelector('.device-name').textContent} ${isCurrentlyOn ? 'apagado' : 'encendido'}`, isCurrentlyOn ? 'error' : 'success');
+          // Show notification
+          showNotification(`${deviceCard.querySelector('.device-name').textContent} ${isCurrentlyOn ? 'apagado' : 'encendido'}`, isCurrentlyOn ? 'error' : 'success');
 
-      // Update active devices count
-      updateActiveDevicesCount();
+          // Update active devices count
+          updateActiveDevicesCount();
+        }
+      }
+
+      // Add this to ensure the username is displayed when page loads
+      document.addEventListener('DOMContentLoaded', function () {
+        // Display username
+        displayUsername();
+
+        // Update active devices count
+        updateActiveDevicesCount();
+      });
     }
   }
-  // Add this to ensure the username is displayed when page loads
-  document.addEventListener('DOMContentLoaded', function() {
-    // Display username
-    displayUsername();
-
-    // Update active devices count
-    updateActiveDevicesCount();
-  });
 
 </script>
 </body>
