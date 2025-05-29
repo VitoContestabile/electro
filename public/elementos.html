@@ -190,6 +190,11 @@
       color: #c0392b;
     }
 
+    .status-loading {
+      background: rgba(52, 152, 219, 0.2);
+      color: #3498db;
+    }
+
     .device-controls {
       display: flex;
       gap: 15px;
@@ -272,6 +277,23 @@
       background: linear-gradient(45deg, #e74c3c, #c0392b);
     }
 
+    .refresh-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-right: 15px;
+    }
+
+    .refresh-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.8);
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -305,6 +327,7 @@
       🏠 SmartHome
     </div>
     <div class="nav-links">
+      <button class="refresh-btn" onclick="loadDeviceStates()">🔄 Actualizar</button>
       <a href="consumo.html">Consumo</a>
       <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
     </div>
@@ -319,7 +342,7 @@
   <div class="room-view">
     <div class="room-overlay">
       <h2 class="room-name">Dispositivos del Living</h2>
-      <p class="room-status">Cargando...</p>
+      <p class="room-status">Cargando estado...</p>
     </div>
   </div>
 
@@ -328,10 +351,10 @@
     <div class="device-card" id="microwave" data-rele="1">
       <img src="https://cdn-icons-png.flaticon.com/512/2252/2252076.png" alt="Microondas" class="device-icon">
       <h3 class="device-name">Microondas</h3>
-      <span class="device-status status-off">Apagado</span>
+      <span class="device-status status-loading">Cargando...</span>
       <div class="device-controls">
-        <button class="btn-control btn-on" onclick="toggleDevice('microwave', true)">Encender</button>
-        <button class="btn-control btn-off" onclick="toggleDevice('microwave', false)">Apagar</button>
+        <button class="btn-control btn-on" onclick="toggleDevice('microwave', true)" disabled>Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('microwave', false)" disabled>Apagar</button>
       </div>
     </div>
 
@@ -339,10 +362,10 @@
     <div class="device-card" id="fridge" data-rele="2">
       <img src="https://cdn-icons-png.flaticon.com/512/2643/2643642.png" alt="Heladera" class="device-icon">
       <h3 class="device-name">Heladera</h3>
-      <span class="device-status status-on">Encendido</span>
+      <span class="device-status status-loading">Cargando...</span>
       <div class="device-controls">
-        <button class="btn-control btn-on" onclick="toggleDevice('fridge', true)">Encender</button>
-        <button class="btn-control btn-off" onclick="toggleDevice('fridge', false)">Apagar</button>
+        <button class="btn-control btn-on" onclick="toggleDevice('fridge', true)" disabled>Encender</button>
+        <button class="btn-control btn-off" onclick="toggleDevice('fridge', false)" disabled>Apagar</button>
       </div>
     </div>
 
@@ -401,6 +424,71 @@
       showNotification('Error de conexión', 'error');
       return null;
     }
+  }
+
+  // NUEVA FUNCIÓN: Cargar estado de los dispositivos
+  async function loadDeviceStates() {
+    try {
+      const response = await authenticatedFetch(`${API_BASE_URL}/api/reles/estado`);
+
+      if (!response) {
+        throw new Error('No se pudo conectar con el servidor');
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Actualizar estado del microondas (relé 1)
+        updateDeviceDisplay('microwave', result.data.rele1);
+
+        // Actualizar estado de la heladera (relé 2)
+        updateDeviceDisplay('fridge', result.data.rele2);
+
+        // Actualizar conteo de dispositivos activos
+        updateActiveDevicesCount();
+
+        // Habilitar botones
+        enableAllButtons();
+
+        console.log('✅ Estados cargados:', result.data);
+      } else {
+        throw new Error(result.message || 'Error al obtener estados');
+      }
+
+    } catch (error) {
+      console.error('Error cargando estados:', error);
+      showNotification(`Error: ${error.message}`, 'error');
+
+      // En caso de error, habilitar botones con estado por defecto
+      updateDeviceDisplay('microwave', 'OFF');
+      updateDeviceDisplay('fridge', 'OFF');
+      enableAllButtons();
+    }
+  }
+
+  // NUEVA FUNCIÓN: Actualizar visualización de un dispositivo
+  function updateDeviceDisplay(deviceId, estado) {
+    const deviceCard = document.getElementById(deviceId);
+    const statusElement = deviceCard.querySelector('.device-status');
+
+    // Actualizar estado visual
+    statusElement.classList.remove('status-on', 'status-off', 'status-loading');
+
+    if (estado === 'ON') {
+      statusElement.classList.add('status-on');
+      statusElement.textContent = 'Encendido';
+    } else {
+      statusElement.classList.add('status-off');
+      statusElement.textContent = 'Apagado';
+    }
+  }
+
+  // NUEVA FUNCIÓN: Habilitar todos los botones
+  function enableAllButtons() {
+    const buttons = document.querySelectorAll('.btn-control');
+    buttons.forEach(btn => {
+      btn.disabled = false;
+    });
   }
 
   // Función para mostrar el username
@@ -491,16 +579,20 @@
 
       if (result.success) {
         // Actualizar la visualización del estado
-        statusElement.classList.remove(isCurrentlyOn ? 'status-on' : 'status-off');
-        statusElement.classList.add(isCurrentlyOn ? 'status-off' : 'status-on');
-        statusElement.textContent = isCurrentlyOn ? 'Apagado' : 'Encendido';
+        updateDeviceDisplay(deviceId, turnOn ? 'ON' : 'OFF');
 
         // Mostrar notificación de éxito
         const deviceName = deviceCard.querySelector('.device-name').textContent;
-        showNotification(`${deviceName} ${isCurrentlyOn ? 'apagado' : 'encendido'}`, 'success');
+        showNotification(`${deviceName} ${turnOn ? 'encendido' : 'apagado'}`, 'success');
 
         // Actualizar el conteo de dispositivos activos
         updateActiveDevicesCount();
+
+        // Recargar estados después de un breve delay para confirmar
+        setTimeout(() => {
+          loadDeviceStates();
+        }, 1000);
+
       } else {
         throw new Error(result.message || 'Error al controlar el dispositivo');
       }
@@ -554,8 +646,8 @@
     // Mostrar el username
     displayUsername();
 
-    // Actualizar el conteo de dispositivos activos
-    updateActiveDevicesCount();
+    // Cargar estados de los dispositivos
+    loadDeviceStates();
   });
 
   // También ejecutar cuando la página esté completamente cargada

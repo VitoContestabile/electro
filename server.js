@@ -456,7 +456,73 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Servidor escuchando en http://0.0.0.0:${PORT}`);
 });
 
-// --- ENDPOINT DE CONTROL DE RELÉS (PROTEGIDO) ---
+
+// Variables para almacenar el estado actual de los relés
+let estadoReles = {
+  rele1: 'OFF',
+  rele2: 'OFF'
+};
+
+// Escuchar mensajes MQTT para actualizar el estado
+mqttClient.on('message', (topic, message) => {
+  const messageStr = message.toString();
+
+  // Actualizar estado de relé 1
+  if (topic === 'XJXT06/rele1') {
+    estadoReles.rele1 = messageStr;
+    console.log(`🔄 Estado Relé 1 actualizado: ${messageStr}`);
+  }
+
+  // Actualizar estado de relé 2
+  if (topic === 'XJXT06/rele2') {
+    estadoReles.rele2 = messageStr;
+    console.log(`🔄 Estado Relé 2 actualizado: ${messageStr}`);
+  }
+});
+
+// Suscribirse a los topics de estado al conectar
+mqttClient.on('connect', () => {
+  console.log('✅ Conectado al broker MQTT');
+
+  // Suscribirse a los topics de estado
+  mqttClient.subscribe('XJXT06/rele1', (err) => {
+    if (err) {
+      console.error('❌ Error suscribiéndose a XJXT06/rele1:', err);
+    } else {
+      console.log('✅ Suscrito a XJXT06/rele1');
+    }
+  });
+
+  mqttClient.subscribe('XJXT06/rele2', (err) => {
+    if (err) {
+      console.error('❌ Error suscribiéndose a XJXT06/rele2:', err);
+    } else {
+      console.log('✅ Suscrito a XJXT06/rele2');
+    }
+  });
+});
+
+// NUEVO ENDPOINT: Obtener estado de los relés
+app.get('/api/reles/estado', authenticateToken, (req, res) => {
+  try {
+    res.json({
+      success: true,
+      data: {
+        rele1: estadoReles.rele1,
+        rele2: estadoReles.rele2
+      },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error obteniendo estado de relés:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+// Tu endpoint existente de control (sin cambios)
 app.post('/api/rele', authenticateToken, (req, res) => {
   try {
     const { rele, estado } = req.body;
