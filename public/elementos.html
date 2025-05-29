@@ -203,6 +203,12 @@
       cursor: pointer;
       font-weight: 600;
       transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .btn-control:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     .btn-on {
@@ -215,17 +221,33 @@
       color: white;
     }
 
-    .btn-control:hover {
+    .btn-control:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
 
-    .btn-on:hover {
+    .btn-on:hover:not(:disabled) {
       box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
     }
 
-    .btn-off:hover {
+    .btn-off:hover:not(:disabled) {
       box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    /* Loading spinner */
+    .loading {
+      width: 16px;
+      height: 16px;
+      border: 2px solid transparent;
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     /* Notification */
@@ -249,8 +271,6 @@
     .notification-error {
       background: linear-gradient(45deg, #e74c3c, #c0392b);
     }
-
-
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
@@ -304,8 +324,8 @@
   </div>
 
   <div class="devices-grid">
-    <!-- Microondas -->
-    <div class="device-card" id="microwave">
+    <!-- Microondas (Relé 1) -->
+    <div class="device-card" id="microwave" data-rele="1">
       <img src="https://cdn-icons-png.flaticon.com/512/2252/2252076.png" alt="Microondas" class="device-icon">
       <h3 class="device-name">Microondas</h3>
       <span class="device-status status-off">Apagado</span>
@@ -315,8 +335,8 @@
       </div>
     </div>
 
-    <!-- Heladera -->
-    <div class="device-card" id="fridge">
+    <!-- Heladera (Relé 2) -->
+    <div class="device-card" id="fridge" data-rele="2">
       <img src="https://cdn-icons-png.flaticon.com/512/2643/2643642.png" alt="Heladera" class="device-icon">
       <h3 class="device-name">Heladera</h3>
       <span class="device-status status-on">Encendido</span>
@@ -332,32 +352,71 @@
 <!-- Notification Element -->
 <div id="notification" class="notification"></div>
 
-
-
 <script>
+  // API Base URL - ajustar según tu configuración
+  const API_BASE_URL = 'http://localhost:3000'; // Cambiar por tu URL del servidor
+
+  // Función para obtener el token de autenticación
+  function getAuthToken() {
+    return localStorage.getItem('authToken');
+  }
+
+  // Función para hacer peticiones autenticadas
+  async function authenticatedFetch(url, options = {}) {
+    const token = getAuthToken();
+    if (!token) {
+      showNotification('No hay token de autenticación', 'error');
+      logout();
+      return null;
+    }
+
+    const defaultOptions = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    };
+
+    const mergedOptions = {
+      ...defaultOptions,
+      ...options,
+      headers: {
+        ...defaultOptions.headers,
+        ...options.headers
+      }
+    };
+
+    try {
+      const response = await fetch(url, mergedOptions);
+
+      if (response.status === 401 || response.status === 403) {
+        showNotification('Sesión expirada', 'error');
+        logout();
+        return null;
+      }
+
+      return response;
+    } catch (error) {
+      console.error('Error en petición:', error);
+      showNotification('Error de conexión', 'error');
+      return null;
+    }
+  }
+
   // Función para mostrar el username
   function displayUsername() {
     try {
-      // Obtener userData del localStorage
       const userDataString = localStorage.getItem('userData');
+      if (!userDataString) return;
 
-      if (!userDataString) {
-        return; // No hay datos de usuario
-      }
-
-      // Parsear los datos
       const userData = JSON.parse(userDataString);
-
-      // Obtener el elemento del DOM
       const usernameDisplay = document.getElementById('username-display');
 
       if (usernameDisplay && userData && userData.username) {
-        // Mostrar el username con formato de saludo
         usernameDisplay.textContent = ', ' + userData.username;
       }
     } catch (error) {
       console.error('Error displaying username:', error);
-      // En caso de error, limpiar el display
       const usernameDisplay = document.getElementById('username-display');
       if (usernameDisplay) {
         usernameDisplay.textContent = '';
@@ -391,25 +450,74 @@
   }
 
   // Función para cambiar el estado de un dispositivo
-  function toggleDevice(deviceId, turnOn) {
+  async function toggleDevice(deviceId, turnOn) {
     const deviceCard = document.getElementById(deviceId);
     const statusElement = deviceCard.querySelector('.device-status');
+    const buttons = deviceCard.querySelectorAll('.btn-control');
+    const releNumber = deviceCard.getAttribute('data-rele');
 
     // Verificar el estado actual
     const isCurrentlyOn = statusElement.classList.contains('status-on');
 
     // Solo hacer cambios si el estado solicitado es diferente del actual
-    if ((turnOn && !isCurrentlyOn) || (!turnOn && isCurrentlyOn)) {
-      // Actualizar la visualización del estado
-      statusElement.classList.remove(isCurrentlyOn ? 'status-on' : 'status-off');
-      statusElement.classList.add(isCurrentlyOn ? 'status-off' : 'status-on');
-      statusElement.textContent = isCurrentlyOn ? 'Apagado' : 'Encendido';
+    if ((turnOn && isCurrentlyOn) || (!turnOn && !isCurrentlyOn)) {
+      showNotification('El dispositivo ya está en ese estado', 'error');
+      return;
+    }
 
-      // Mostrar notificación
-      showNotification(`${deviceCard.querySelector('.device-name').textContent} ${isCurrentlyOn ? 'apagado' : 'encendido'}`, isCurrentlyOn ? 'error' : 'success');
+    // Deshabilitar botones y mostrar loading
+    buttons.forEach(btn => {
+      btn.disabled = true;
+      if ((turnOn && btn.classList.contains('btn-on')) || (!turnOn && btn.classList.contains('btn-off'))) {
+        btn.innerHTML = '<div class="loading"></div>';
+      }
+    });
 
-      // Actualizar el conteo de dispositivos activos
-      updateActiveDevicesCount();
+    try {
+      // Enviar comando al servidor
+      const response = await authenticatedFetch(`${API_BASE_URL}/api/rele`, {
+        method: 'POST',
+        body: JSON.stringify({
+          rele: releNumber,
+          estado: turnOn ? 'ON' : 'OFF'
+        })
+      });
+
+      if (!response) {
+        throw new Error('No se pudo conectar con el servidor');
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Actualizar la visualización del estado
+        statusElement.classList.remove(isCurrentlyOn ? 'status-on' : 'status-off');
+        statusElement.classList.add(isCurrentlyOn ? 'status-off' : 'status-on');
+        statusElement.textContent = isCurrentlyOn ? 'Apagado' : 'Encendido';
+
+        // Mostrar notificación de éxito
+        const deviceName = deviceCard.querySelector('.device-name').textContent;
+        showNotification(`${deviceName} ${isCurrentlyOn ? 'apagado' : 'encendido'}`, 'success');
+
+        // Actualizar el conteo de dispositivos activos
+        updateActiveDevicesCount();
+      } else {
+        throw new Error(result.message || 'Error al controlar el dispositivo');
+      }
+
+    } catch (error) {
+      console.error('Error controlando dispositivo:', error);
+      showNotification(`Error: ${error.message}`, 'error');
+    } finally {
+      // Restaurar botones
+      buttons.forEach(btn => {
+        btn.disabled = false;
+        if (btn.classList.contains('btn-on')) {
+          btn.innerHTML = 'Encender';
+        } else {
+          btn.innerHTML = 'Apagar';
+        }
+      });
     }
   }
 
@@ -420,16 +528,29 @@
     // Limpiar localStorage
     localStorage.removeItem('authToken');
     localStorage.removeItem('userData');
-    window.location.href = 'inicio.html';
 
-    // Simular redirección (en un entorno real, sería a otra página)
     setTimeout(() => {
-      showNotification('Sesión cerrada correctamente', 'success');
+      window.location.href = 'inicio.html';
     }, 1000);
+  }
+
+  // Verificar autenticación al cargar la página
+  function checkAuthentication() {
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = 'inicio.html';
+      return false;
+    }
+    return true;
   }
 
   // Inicialización cuando se carga la página
   document.addEventListener('DOMContentLoaded', function() {
+    // Verificar autenticación
+    if (!checkAuthentication()) {
+      return;
+    }
+
     // Mostrar el username
     displayUsername();
 
@@ -439,7 +560,9 @@
 
   // También ejecutar cuando la página esté completamente cargada
   window.addEventListener('load', function() {
-    displayUsername();
+    if (checkAuthentication()) {
+      displayUsername();
+    }
   });
 </script>
 </body>

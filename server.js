@@ -455,3 +455,68 @@ process.on('SIGINT', async () => {
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Servidor escuchando en http://0.0.0.0:${PORT}`);
 });
+
+// --- ENDPOINT DE CONTROL DE RELÉS (PROTEGIDO) ---
+app.post('/api/rele', authenticateToken, (req, res) => {
+  try {
+    const { rele, estado } = req.body;
+
+    // Validaciones básicas
+    if (!rele || !estado) {
+      return res.status(400).json({
+        success: false,
+        message: 'Relé y estado son requeridos'
+      });
+    }
+
+    // Validar que el relé sea un número válido (1 o 2)
+    const releNum = parseInt(rele);
+    if (isNaN(releNum) || releNum < 1 || releNum > 2) {
+      return res.status(400).json({
+        success: false,
+        message: 'El relé debe ser 1 o 2'
+      });
+    }
+
+    // Validar que el estado sea válido
+    if (estado !== 'ON' && estado !== 'OFF') {
+      return res.status(400).json({
+        success: false,
+        message: 'El estado debe ser ON u OFF'
+      });
+    }
+
+    // Construir el topic correctamente
+    const topic = `XJXT06/control${releNum}`;
+    const mensaje = estado;
+
+    // Publicar mensaje MQTT
+    mqttClient.publish(topic, mensaje, (err) => {
+      if (err) {
+        console.error('❌ Error al publicar mensaje MQTT:', err);
+        return res.status(500).json({
+          success: false,
+          message: 'Error al enviar comando al dispositivo'
+        });
+      }
+
+      console.log(`🟡 Enviado a ${topic}: ${mensaje}`);
+      res.json({
+        success: true,
+        message: `Relé ${releNum} ${estado === 'ON' ? 'encendido' : 'apagado'} correctamente`,
+        data: {
+          rele: releNum,
+          estado: estado,
+          topic: topic
+        }
+      });
+    });
+
+  } catch (error) {
+    console.error('Error en control de relé:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
