@@ -291,7 +291,7 @@
 
 <!-- Main Content -->
 <div class="main-content">
-  <h1 class="page-title">Bienvenido a tu Casa Inteligente <span id="username-display"></span></h1>
+  <h1 class="page-title">Bienvenido a tu Casa Inteligente <span id="username-display"> </span></h1>
 
   <!-- Room View -->
   <div class="room-view">
@@ -645,75 +645,78 @@
 
   // Initialize device states from server
   document.addEventListener('DOMContentLoaded', function() {
-    // Verificar autenticación primero
-    checkAuth().then(isAuthenticated => {
-      if (!isAuthenticated) return;
+    // Get user data and token
+    const token = localStorage.getItem('authToken');
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
 
-      const token = localStorage.getItem('authToken');
-      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    // Mostrar nombre de usuario
+    if (userData && userData.username) {
+      document.getElementById('username-display').textContent = userData.username;
+    }
 
-      // Mostrar nombre de usuario
-      if (userData.username) {
-        document.getElementById('username-display').textContent = userData.username;
+    // Check if user is authenticated
+    if (!token) {
+      // Redirect to login page if no token
+      window.location.href = 'inicio.html';
+      return;
+    }
+
+    // Obtener estado de los dispositivos desde el servidor
+    fetch('/api/devices', {
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
-
-      // Obtener estado de los dispositivos desde el servidor
-      fetch('/api/devices', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-              .then(response => {
-                if (!response.ok) throw new Error('Error al obtener dispositivos');
-                return response.json();
-              })
-              .then(devices => {
-                // Actualizar estados de los dispositivos según la respuesta del servidor
-                devices.forEach(device => {
-                  const deviceElement = document.getElementById(device.id);
-                  if (deviceElement) {
-                    const statusElement = deviceElement.querySelector('.device-status');
-                    if (device.status) {
-                      statusElement.className = 'device-status status-on';
-                      statusElement.textContent = 'Encendido';
-                    } else {
-                      statusElement.className = 'device-status status-off';
-                      statusElement.textContent = 'Apagado';
-                    }
-                  }
-                });
-
-                // Actualizar contador de dispositivos activos
-                updateActiveDevicesCount();
-
-                // Mostrar notificación de bienvenida
-                showNotification(`Bienvenido ${userData.username || 'a tu Casa Inteligente'}`, 'success');
-              })
-              .catch(error => {
-                console.error('Error al cargar dispositivos:', error);
-                showNotification('Error al cargar los dispositivos', 'error');
-
-                // En caso de error, inicializar con valores por defecto
-                const initialStates = {
-                  'fridge': true,  // Heladera encendida por defecto
-                  'lights': true   // Lámparas encendidas por defecto
-                };
-
-                // Aplicar estados iniciales
-                for (const [deviceId, isOn] of Object.entries(initialStates)) {
-                  if (isOn) {
-                    const deviceCard = document.getElementById(deviceId);
-                    if (deviceCard) {
-                      const statusElement = deviceCard.querySelector('.device-status');
-                      statusElement.className = 'device-status status-on';
-                      statusElement.textContent = 'Encendido';
-                    }
+    })
+            .then(response => {
+              if (!response.ok) throw new Error('Error al obtener dispositivos');
+              return response.json();
+            })
+            .then(devices => {
+              // Actualizar estados de los dispositivos según la respuesta del servidor
+              devices.forEach(device => {
+                const deviceElement = document.getElementById(device.id);
+                if (deviceElement) {
+                  const statusElement = deviceElement.querySelector('.device-status');
+                  if (device.status) {
+                    statusElement.className = 'device-status status-on';
+                    statusElement.textContent = 'Encendido';
+                  } else {
+                    statusElement.className = 'device-status status-off';
+                    statusElement.textContent = 'Apagado';
                   }
                 }
-
-                updateActiveDevicesCount();
               });
-    });
+
+              // Actualizar contador de dispositivos activos
+              updateActiveDevicesCount();
+
+              // Mostrar notificación de bienvenida
+              showNotification(`Bienvenido ${userData.username || 'a tu Casa Inteligente'}`, 'success');
+            })
+            .catch(error => {
+              console.error('Error al cargar dispositivos:', error);
+              showNotification('Error al cargar los dispositivos', 'error');
+
+              // En caso de error, inicializar con valores por defecto
+              const initialStates = {
+                'fridge': true,  // Heladera encendida por defecto
+                'lights': true   // Lámparas encendidas por defecto
+              };
+
+              // Aplicar estados iniciales
+              for (const [deviceId, isOn] of Object.entries(initialStates)) {
+                if (isOn) {
+                  const deviceCard = document.getElementById(deviceId);
+                  if (deviceCard) {
+                    const statusElement = deviceCard.querySelector('.device-status');
+                    statusElement.className = 'device-status status-on';
+                    statusElement.textContent = 'Encendido';
+                  }
+                }
+              }
+
+              updateActiveDevicesCount();
+            });
   });
 </script>
 </body>
