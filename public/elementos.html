@@ -589,48 +589,59 @@
             });
   }
 
-  // Verificar autenticación al cargar la página
-  function checkAuth() {
-    const token = localStorage.getItem('authToken');
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    if (!token) {
-      // Si no hay token, redireccionar a inicio
-      showNotification('Sesión no válida. Por favor inicie sesión', 'error');
-      setTimeout(() => {
-        window.location.href = 'inicio.html';
-      }, 1500);
-      return false;
+    const username = document.getElementById('signup-username').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+
+    // Validación básica
+    if (!username || !email || !password) {
+      alert('Por favor complete todos los campos');
+      return;
     }
 
-    // Verificar validez del token con el servidor
-    return fetch('/api/verify', {
-      headers: {
-        'Authorization': `Bearer ${token}`
+    if (password.length < 6) {
+      alert('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    // Mostrar spinner y deshabilitar botón
+    signupSpinner.style.display = 'inline-block';
+    signupSubmit.disabled = true;
+
+    try {
+      // Enviar solicitud al servidor
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Error al registrarse');
       }
-    })
-            .then(response => {
-              if (!response.ok) {
-                throw new Error('Token inválido');
-              }
-              return response.json();
-            })
-            .then(data => {
-              // Mostrar información del usuario actual
-              document.getElementById('username-display').textContent = data.username || '';
-              return true;
-            })
-            .catch(error => {
-              console.error('Error de autenticación:', error);
-              // Si el token no es válido, limpiar localStorage y redireccionar
-              localStorage.removeItem('authToken');
-              localStorage.removeItem('userData');
-              showNotification('Sesión expirada. Por favor inicie sesión nuevamente', 'error');
-              setTimeout(() => {
-                window.location.href = 'inicio.html';
-              }, 1500);
-              return false;
-            });
-  }
+
+      // Guardar token y datos de usuario en localStorage
+      localStorage.setItem('authToken', result.data.token);
+      localStorage.setItem('userData', JSON.stringify(result.data.user));
+
+      // Redireccionar a dashboard
+      window.location.href = 'elementos.html';
+    } catch (error) {
+      alert(error.message || 'Error al registrarse. Intente nuevamente.');
+      console.error(error);
+    } finally {
+      // Ocultar spinner y habilitar botón
+      signupSpinner.style.display = 'none';
+      signupSubmit.disabled = false;
+    }
+  });
 
   // Initialize device states from server
   document.addEventListener('DOMContentLoaded', function() {

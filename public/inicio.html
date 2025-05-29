@@ -1342,15 +1342,15 @@
         body: JSON.stringify({ username, password })
       });
 
-      const data = await response.json();
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Error al iniciar sesión');
+        throw new Error(result.message || 'Error al iniciar sesión');
       }
 
       // Guardar token y datos de usuario en localStorage
-      localStorage.setItem('authToken', data.token);
-      localStorage.setItem('userData', JSON.stringify(data.user));
+      localStorage.setItem('authToken', result.data.token);
+      localStorage.setItem('userData', JSON.stringify(result.data.user));
 
       // Redireccionar a dashboard
       window.location.href = 'elementos.html';
@@ -1396,15 +1396,15 @@
         body: JSON.stringify({ username, email, password })
       });
 
-      const data = await response.json();
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Error al registrarse');
+        throw new Error(result.message || 'Error al registrarse');
       }
 
       // Guardar token y datos de usuario en localStorage
-      localStorage.setItem('authToken', data.token);
-      localStorage.setItem('userData', JSON.stringify(data.user));
+      localStorage.setItem('authToken', result.data.token);
+      localStorage.setItem('userData', JSON.stringify(result.data.user));
 
       // Redireccionar a dashboard
       window.location.href = 'elementos.html';
