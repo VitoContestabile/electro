@@ -686,6 +686,14 @@
       updateActiveDevicesCount();
     }
   }
+  // Add this to ensure the username is displayed when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    // Display username
+    displayUsername();
+
+    // Update active devices count
+    updateActiveDevicesCount();
+  });
 
 </script>
 </body>
