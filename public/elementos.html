@@ -447,8 +447,8 @@
   let autoRefreshInterval = null;
   let countdownInterval = null;
   let autoRefreshEnabled = true; // Habilitado por defecto
-  let countdownSeconds = 10; // Intervalo de 30 segundos
-  const REFRESH_INTERVAL = 10000; // 30 segundos en milisegundos
+  let countdownSeconds = 10; // Intervalo de 10 segundos
+  const REFRESH_INTERVAL = 10000; // 10 segundos en milisegundos
 
   // Función para obtener el token de autenticación
   function getAuthToken() {
@@ -758,7 +758,7 @@
 
         // Resetear el countdown del auto-refresh si está activo
         if (autoRefreshEnabled) {
-          countdownSeconds = 30;
+          countdownSeconds = 10;
         }
 
         // Recargar estados después de un breve delay para confirmar
