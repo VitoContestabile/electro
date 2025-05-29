@@ -374,34 +374,178 @@
 
 <script>
   // Toggle device state
-  function toggleDevice(deviceId, turnOn) {
-    const deviceCard = document.getElementById(deviceId);
-    const statusElement = deviceCard.querySelector('.device-status');
+  // Form submission
+  const loginForm = document.getElementById('login-form');
+  const signupForm = document.getElementById('signup-form');
+  const loginSpinner = document.getElementById('login-spinner');
+  const signupSpinner = document.getElementById('signup-spinner');
+  const loginSubmit = document.getElementById('login-submit');
+  const signupSubmit = document.getElementById('signup-submit');
 
-    if (turnOn) {
-      statusElement.className = 'device-status status-on';
-      statusElement.textContent = 'Encendido';
-      showNotification(`${deviceCard.querySelector('.device-name').textContent} encendido correctamente`, 'success');
-    } else {
-      statusElement.className = 'device-status status-off';
-      statusElement.textContent = 'Apagado';
-      showNotification(`${deviceCard.querySelector('.device-name').textContent} apagado correctamente`, 'success');
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+
+    // Validación básica
+    if (!username || !password) {
+      alert('Por favor complete todos los campos');
+      return;
     }
 
-    // Aquí se podría agregar código para comunicarse con el backend
-    console.log(`Dispositivo ${deviceId} ${turnOn ? 'encendido' : 'apagado'}`);
+    // Mostrar spinner y deshabilitar botón
+    loginSpinner.style.display = 'inline-block';
+    loginSubmit.disabled = true;
 
-    // Update active devices count in room overlay
-    updateActiveDevicesCount();
-  }
+    try {
+      // Enviar solicitud al servidor
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al iniciar sesión');
+      }
+
+      // Guardar token y datos de usuario en localStorage
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userData', JSON.stringify(data.user));
+
+      // Redireccionar a dashboard
+      window.location.href = 'elementos.html';
+    } catch (error) {
+      alert(error.message || 'Error al iniciar sesión. Intente nuevamente.');
+      console.error(error);
+    } finally {
+      // Ocultar spinner y habilitar botón
+      loginSpinner.style.display = 'none';
+      loginSubmit.disabled = false;
+    }
+  });
+
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById('signup-username').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+
+    // Validación básica
+    if (!username || !email || !password) {
+      alert('Por favor complete todos los campos');
+      return;
+    }
+
+    if (password.length < 6) {
+      alert('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    // Mostrar spinner y deshabilitar botón
+    signupSpinner.style.display = 'inline-block';
+    signupSubmit.disabled = true;
+
+    try {
+      // Enviar solicitud al servidor
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al registrarse');
+      }
+
+      // Guardar token y datos de usuario en localStorage
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userData', JSON.stringify(data.user));
+
+      // Redireccionar a dashboard
+      window.location.href = 'elementos.html';
+    } catch (error) {
+      alert(error.message || 'Error al registrarse. Intente nuevamente.');
+      console.error(error);
+    } finally {
+      // Ocultar spinner y habilitar botón
+      signupSpinner.style.display = 'none';
+      signupSubmit.disabled = false;
+    }
+  });
+
+  // Comprobar si ya hay sesión al cargar
+  document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      // Verificar token con el servidor
+      fetch('/api/auth/verify', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+              .then(response => {
+                if (response.ok) {
+                  // Si el token es válido, mostrar botón de dashboard
+                  document.querySelector('.nav-buttons').innerHTML = `
+            <a href="elementos.html" class="btn btn-login">Mi Dashboard</a>
+            <button class="btn btn-signup" id="logout-btn">Cerrar Sesión</button>
+          `;
+
+                  // Agregar evento de logout
+                  document.getElementById('logout-btn').addEventListener('click', () => {
+                    fetch('/api/auth/logout', {
+                      method: 'POST',
+                      headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                    })
+                            .finally(() => {
+                              localStorage.removeItem('authToken');
+                              localStorage.removeItem('userData');
+                              window.location.reload();
+                            });
+                  });
+                } else {
+                  // Si el token no es válido, eliminar del localStorage
+                  localStorage.removeItem('authToken');
+                  localStorage.removeItem('userData');
+                }
+              })
+              .catch(() => {
+                // Error en la verificación, eliminar del localStorage
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userData');
+              });
+    }
+  });
 
   // Update active devices count in room overlay
   function updateActiveDevicesCount() {
     const activeDevices = document.querySelectorAll('.status-on').length;
-    document.querySelector('.room-status').textContent = `${activeDevices} dispositivos activos`;
+    const roomStatus = document.querySelector('.room-status');
+    if (roomStatus) {
+      roomStatus.textContent = `${activeDevices} dispositivos activos`;
+    } else {
+      // Si no existe el elemento, crearlo
+      const roomOverlay = document.querySelector('.room-overlay');
+      const statusElement = document.createElement('p');
+      statusElement.className = 'room-status';
+      statusElement.textContent = `${activeDevices} dispositivos activos`;
+      roomOverlay.appendChild(statusElement);
+    }
   }
 
-  // Show notification
   function showNotification(message, type) {
     const notification = document.getElementById('notification');
     notification.textContent = message;
@@ -417,29 +561,40 @@
     }, 3000);
   }
 
-  // Logout function
   function logout() {
+    const token = localStorage.getItem('authToken');
+
     // Mostrar notificación de cierre de sesión
     showNotification('Cerrando sesión...', 'success');
 
-    // Esperar un momento para que se vea la notificación antes de redireccionar
-    setTimeout(() => {
-      // Limpiar localStorage (token y datos de usuario)
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userData');
+    // Realizar la solicitud de logout al servidor
+    fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+            .catch(error => {
+              console.error('Error al cerrar sesión:', error);
+            })
+            .finally(() => {
+              // Limpiar localStorage independientemente del resultado
+              localStorage.removeItem('authToken');
+              localStorage.removeItem('userData');
 
-      // Redireccionar a la página de inicio
-      window.location.href = 'inicio.html';
-    }, 1000);
+              // Redireccionar a la página de inicio
+              setTimeout(() => {
+                window.location.href = 'inicio.html';
+              }, 1000);
+            });
   }
 
   // Verificar autenticación al cargar la página
   function checkAuth() {
     const token = localStorage.getItem('authToken');
-    const userData = localStorage.getItem('userData');
 
-    if (!token || !userData) {
-      // Si no hay token o datos de usuario, redireccionar a inicio
+    if (!token) {
+      // Si no hay token, redireccionar a inicio
       showNotification('Sesión no válida. Por favor inicie sesión', 'error');
       setTimeout(() => {
         window.location.href = 'inicio.html';
@@ -447,56 +602,107 @@
       return false;
     }
 
-    // Mostrar información del usuario actual
-    try {
-      const user = JSON.parse(userData);
-      document.getElementById('user-info').textContent = `Usuario: ${user.username} | Email: ${user.email}`;
-      document.getElementById('username-display').textContent = user.username;
-    } catch (e) {
-      console.error('Error al parsear datos de usuario:', e);
-    }
-
-    return true;
+    // Verificar validez del token con el servidor
+    return fetch('/api/auth/verify', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Token inválido');
+              }
+              return response.json();
+            })
+            .then(data => {
+              // Mostrar información del usuario actual
+              document.getElementById('username-display').textContent = data.username || '';
+              return true;
+            })
+            .catch(error => {
+              console.error('Error de autenticación:', error);
+              // Si el token no es válido, limpiar localStorage y redireccionar
+              localStorage.removeItem('authToken');
+              localStorage.removeItem('userData');
+              showNotification('Sesión expirada. Por favor inicie sesión nuevamente', 'error');
+              setTimeout(() => {
+                window.location.href = 'inicio.html';
+              }, 1500);
+              return false;
+            });
   }
 
-  // Display username from localStorage
-  document.addEventListener('DOMContentLoaded', () => {
-    const usernameDisplay = document.getElementById('username-display');
-    const userData = JSON.parse(localStorage.getItem('userData'));
-
-    if (userData && userData.username) {
-      usernameDisplay.textContent = userData.username;
-    } else {
-      // Fallback in case user data is not available
-      usernameDisplay.textContent = 'Usuario';
-    }
-  });
-  // Initialize device states from server (simulated)
+  // Initialize device states from server
   document.addEventListener('DOMContentLoaded', function() {
     // Verificar autenticación primero
-    if (!checkAuth()) return;
+    checkAuth().then(isAuthenticated => {
+      if (!isAuthenticated) return;
 
-    // Simulación de estados iniciales - en un caso real, estos vendrían del servidor
-    const initialStates = {
-      'fridge': true,  // Heladera encendida por defecto
-      'lights': true   // Lámparas encendidas por defecto
-    };
+      const token = localStorage.getItem('authToken');
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
 
-    // Aplicar estados iniciales
-    for (const [deviceId, isOn] of Object.entries(initialStates)) {
-      if (isOn) {
-        const deviceCard = document.getElementById(deviceId);
-        const statusElement = deviceCard.querySelector('.device-status');
-        statusElement.className = 'device-status status-on';
-        statusElement.textContent = 'Encendido';
+      // Mostrar nombre de usuario
+      if (userData.username) {
+        document.getElementById('username-display').textContent = userData.username;
       }
-    }
 
-    // Actualizar contador de dispositivos activos
-    updateActiveDevicesCount();
+      // Obtener estado de los dispositivos desde el servidor
+      fetch('/api/devices', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+              .then(response => {
+                if (!response.ok) throw new Error('Error al obtener dispositivos');
+                return response.json();
+              })
+              .then(devices => {
+                // Actualizar estados de los dispositivos según la respuesta del servidor
+                devices.forEach(device => {
+                  const deviceElement = document.getElementById(device.id);
+                  if (deviceElement) {
+                    const statusElement = deviceElement.querySelector('.device-status');
+                    if (device.status) {
+                      statusElement.className = 'device-status status-on';
+                      statusElement.textContent = 'Encendido';
+                    } else {
+                      statusElement.className = 'device-status status-off';
+                      statusElement.textContent = 'Apagado';
+                    }
+                  }
+                });
 
-    // Mostrar notificación de bienvenida
-    showNotification('Bienvenido a tu Casa Inteligente', 'success');
+                // Actualizar contador de dispositivos activos
+                updateActiveDevicesCount();
+
+                // Mostrar notificación de bienvenida
+                showNotification(`Bienvenido ${userData.username || 'a tu Casa Inteligente'}`, 'success');
+              })
+              .catch(error => {
+                console.error('Error al cargar dispositivos:', error);
+                showNotification('Error al cargar los dispositivos', 'error');
+
+                // En caso de error, inicializar con valores por defecto
+                const initialStates = {
+                  'fridge': true,  // Heladera encendida por defecto
+                  'lights': true   // Lámparas encendidas por defecto
+                };
+
+                // Aplicar estados iniciales
+                for (const [deviceId, isOn] of Object.entries(initialStates)) {
+                  if (isOn) {
+                    const deviceCard = document.getElementById(deviceId);
+                    if (deviceCard) {
+                      const statusElement = deviceCard.querySelector('.device-status');
+                      statusElement.className = 'device-status status-on';
+                      statusElement.textContent = 'Encendido';
+                    }
+                  }
+                }
+
+                updateActiveDevicesCount();
+              });
+    });
   });
 </script>
 </body>

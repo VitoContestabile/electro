@@ -1333,24 +1333,29 @@
     loginSubmit.disabled = true;
 
     try {
-      // Simulación de login (reemplazar con API real)
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Enviar solicitud al servidor
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
 
-      // Simulando datos de usuario y token
-      const userData = {
-        username: username,
-        email: `${username}@ejemplo.com`,
-        id: '123456'
-      };
+      const data = await response.json();
 
-      // Guardar datos en localStorage
-      localStorage.setItem('authToken', 'token-simulado-1234567890');
-      localStorage.setItem('userData', JSON.stringify(userData));
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al iniciar sesión');
+      }
+
+      // Guardar token y datos de usuario en localStorage
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userData', JSON.stringify(data.user));
 
       // Redireccionar a dashboard
       window.location.href = 'elementos.html';
     } catch (error) {
-      alert('Error al iniciar sesión. Intente nuevamente.');
+      alert(error.message || 'Error al iniciar sesión. Intente nuevamente.');
       console.error(error);
     } finally {
       // Ocultar spinner y habilitar botón
@@ -1382,24 +1387,29 @@
     signupSubmit.disabled = true;
 
     try {
-      // Simulación de registro (reemplazar con API real)
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Enviar solicitud al servidor
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, email, password })
+      });
 
-      // Simulando datos de usuario y token
-      const userData = {
-        username: username,
-        email: email,
-        id: '123456'
-      };
+      const data = await response.json();
 
-      // Guardar datos en localStorage
-      localStorage.setItem('authToken', 'token-simulado-1234567890');
-      localStorage.setItem('userData', JSON.stringify(userData));
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al registrarse');
+      }
+
+      // Guardar token y datos de usuario en localStorage
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userData', JSON.stringify(data.user));
 
       // Redireccionar a dashboard
       window.location.href = 'elementos.html';
     } catch (error) {
-      alert('Error al registrarse. Intente nuevamente.');
+      alert(error.message || 'Error al registrarse. Intente nuevamente.');
       console.error(error);
     } finally {
       // Ocultar spinner y habilitar botón
@@ -1412,18 +1422,45 @@
   document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('authToken');
     if (token) {
-      // Si hay token, ocultar botones de login/registro y mostrar botón de dashboard
-      document.querySelector('.nav-buttons').innerHTML = `
-          <a href="elementos.html" class="btn btn-login">Mi Dashboard</a>
-          <button class="btn btn-signup" id="logout-btn">Cerrar Sesión</button>
-        `;
+      // Verificar token con el servidor
+      fetch('/api/auth/verify', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+              .then(response => {
+                if (response.ok) {
+                  // Si el token es válido, mostrar botón de dashboard
+                  document.querySelector('.nav-buttons').innerHTML = `
+            <a href="elementos.html" class="btn btn-login">Mi Dashboard</a>
+            <button class="btn btn-signup" id="logout-btn">Cerrar Sesión</button>
+          `;
 
-      // Agregar evento de logout
-      document.getElementById('logout-btn').addEventListener('click', () => {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userData');
-        window.location.reload();
-      });
+                  // Agregar evento de logout
+                  document.getElementById('logout-btn').addEventListener('click', () => {
+                    fetch('/api/auth/logout', {
+                      method: 'POST',
+                      headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                    })
+                            .finally(() => {
+                              localStorage.removeItem('authToken');
+                              localStorage.removeItem('userData');
+                              window.location.reload();
+                            });
+                  });
+                } else {
+                  // Si el token no es válido, eliminar del localStorage
+                  localStorage.removeItem('authToken');
+                  localStorage.removeItem('userData');
+                }
+              })
+              .catch(() => {
+                // Error en la verificación, eliminar del localStorage
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userData');
+              });
     }
   });
 </script>
