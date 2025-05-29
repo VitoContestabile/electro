@@ -645,27 +645,41 @@
   // Add this function to display the username
   function displayUsername() {
     try {
-      // Get userData from localStorage and parse it
-      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+      // Get userData from localStorage
+      const userDataString = localStorage.getItem('userData');
 
       // Get the username display element
       const usernameDisplay = document.getElementById('username-display');
 
-      // Check if username exists
-      if (userData && userData.username) {
-        // Display username with a greeting format
-        usernameDisplay.textContent = ", " + userData.username;
+      if (userDataString) {
+        // Try parsing as JSON first
+        try {
+          const userData = JSON.parse(userDataString);
+          if (userData && userData.username) {
+            // Display username with a greeting format
+            usernameDisplay.textContent = ", " + userData.username;
+            return;
+          }
+        } catch (e) {
+          // If JSON parsing fails, it might be just the username string
+          console.log("JSON parse failed, trying direct usage");
+        }
+
+        // If we get here, either parsing failed or there was no username property
+        // Try using the userData string directly
+        if (userDataString && typeof userDataString === 'string') {
+          usernameDisplay.textContent = ", " + userDataString;
+        }
       } else {
-        // Clear the display if no username found
+        // Clear the display if no userData found
         usernameDisplay.textContent = "";
       }
     } catch (error) {
       console.error('Error displaying username:', error);
       // In case of error, clear the display
       document.getElementById('username-display').textContent = "";
-    }
-  }
-  function toggleDevice(deviceId, turnOn) {
+
+      function toggleDevice(deviceId, turnOn) {
     const deviceCard = document.getElementById(deviceId);
     const statusElement = deviceCard.querySelector('.device-status');
 
