@@ -32,6 +32,37 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
+            position: relative;
+        }
+
+        .home-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+            background: linear-gradient(45deg, #27ae60, #219a52);
+        }
+
+        .home-btn:active {
+            transform: translateY(0);
         }
 
         .header h1 {
@@ -162,12 +193,28 @@
             .stats {
                 grid-template-columns: 1fr;
             }
+
+            .home-btn {
+                position: relative;
+                margin-bottom: 20px;
+                align-self: center;
+            }
+
+            .header {
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <a href="elementos.html" class="home-btn">
+                🏠 Casa
+            </a>
             <h1>Monitor de Corrientes</h1>
             <p>Visualización en tiempo real de las últimas 100 mediciones</p>
         </div>
