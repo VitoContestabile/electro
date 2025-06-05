@@ -586,3 +586,63 @@ app.post('/api/rele', authenticateToken, (req, res) => {
     });
   }
 });
+// GET /api/corrientes/ultimas-100
+app.get('/api/corrientes/ultimas-100', async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT id, corriente1, corriente2, fecha 
+      FROM corrientes 
+      ORDER BY fecha DESC 
+      LIMIT 100
+    `);
+
+    // Invertir el orden para mostrar cronológicamente (más antiguo primero)
+    const corrientes = result.rows.reverse();
+
+    res.json({
+      success: true,
+      corrientes: corrientes,
+      total: corrientes.length,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error al obtener corrientes:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error interno del servidor',
+      message: error.message
+    });
+  }
+});
+
+// Endpoint adicional para obtener estadísticas
+app.get('/api/corrientes/estadisticas', async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT 
+        COUNT(*) as total_registros,
+        AVG(corriente1) as promedio_corriente1,
+        AVG(corriente2) as promedio_corriente2,
+        MAX(corriente1) as max_corriente1,
+        MAX(corriente2) as max_corriente2,
+        MIN(corriente1) as min_corriente1,
+        MIN(corriente2) as min_corriente2,
+        MAX(fecha) as ultima_medicion
+      FROM corrientes
+      WHERE fecha >= NOW() - INTERVAL '24 hours'
+    `);
+
+    res.json({
+      success: true,
+      estadisticas: result.rows[0]
+    });
+
+  } catch (error) {
+    console.error('Error al obtener estadísticas:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error interno del servidor'
+    });
+  }
+});

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Corrientes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:nth-child(2) {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        }
+
+        .stat-card:nth-child(3) {
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
+            color: #2c3e50;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .status.loading {
+            background: linear-gradient(45deg, #ffecd2, #fcb69f);
+            color: #d35400;
+        }
+
+        .status.success {
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
+            color: #27ae60;
+        }
+
+        .status.error {
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            color: #e74c3c;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Monitor de Corrientes</h1>
+            <p>Visualización en tiempo real de las últimas 100 mediciones</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="corriente1-actual">--</div>
+                <div class="stat-label">Corriente 1 Actual (A)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="corriente2-actual">--</div>
+                <div class="stat-label">Corriente 2 Actual (A)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="total-mediciones">--</div>
+                <div class="stat-label">Total Mediciones</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="cargarDatos()">🔄 Actualizar</button>
+            <button class="btn" onclick="toggleAutoUpdate()">⏱️ Auto-actualizar</button>
+            <button class="btn" onclick="exportarDatos()">📊 Exportar CSV</button>
+        </div>
+
+        <div class="status loading" id="status">
+            Cargando datos...
+        </div>
+
+        <div class="chart-container">
+            <canvas id="corrientesChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        let chart;
+        let autoUpdateInterval;
+        let isAutoUpdating = false;
+
+        // Configuración del gráfico
+        const chartConfig = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Corriente 1 (A)',
+                        data: [],
+                        borderColor: '#ff6b6b',
+                        backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 2,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Corriente 2 (A)',
+                        data: [],
+                        borderColor: '#4ecdc4',
+                        backgroundColor: 'rgba(78, 205, 196, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 2,
+                        pointHoverRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Variación de Corrientes en el Tiempo',
+                        font: {
+                            size: 18,
+                            weight: 'bold'
+                        },
+                        color: '#2c3e50'
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        borderColor: '#667eea',
+                        borderWidth: 1,
+                        cornerRadius: 10,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                return 'Fecha: ' + context[0].label;
+                            },
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' A';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Tiempo',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Corriente (A)',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    }
+                },
+                animation: {
+                    duration: 750,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        };
+
+        // Inicializar gráfico
+        function inicializarChart() {
+            const ctx = document.getElementById('corrientesChart').getContext('2d');
+            ctx.canvas.height = 400;
+            chart = new Chart(ctx, chartConfig);
+        }
+
+        // Cargar datos desde el backend
+        async function cargarDatos() {
+            const statusEl = document.getElementById('status');
+            statusEl.className = 'status loading';
+            statusEl.textContent = 'Cargando datos...';
+
+            try {
+                const response = await fetch('/api/corrientes/ultimas-100');
+
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success && data.corrientes.length > 0) {
+                    actualizarChart(data.corrientes);
+                    actualizarEstadisticas(data.corrientes);
+
+                    statusEl.className = 'status success';
+                    statusEl.textContent = `✅ Datos actualizados - ${data.corrientes.length} mediciones cargadas`;
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '⚠️ No se encontraron datos';
+                }
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ Error al cargar datos: ' + error.message;
+            }
+        }
+
+        // Actualizar gráfico con nuevos datos
+        function actualizarChart(corrientes) {
+            const labels = corrientes.map(c => {
+                const fecha = new Date(c.fecha);
+                return fecha.toLocaleString('es-AR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            });
+
+            const corriente1Data = corrientes.map(c => c.corriente1);
+            const corriente2Data = corrientes.map(c => c.corriente2);
+
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = corriente1Data;
+            chart.data.datasets[1].data = corriente2Data;
+            chart.update('active');
+        }
+
+        // Actualizar estadísticas
+        function actualizarEstadisticas(corrientes) {
+            if (corrientes.length > 0) {
+                const ultima = corrientes[corrientes.length - 1];
+                document.getElementById('corriente1-actual').textContent = ultima.corriente1.toFixed(2);
+                document.getElementById('corriente2-actual').textContent = ultima.corriente2.toFixed(2);
+                document.getElementById('total-mediciones').textContent = corrientes.length;
+            }
+        }
+
+        // Toggle auto-actualización
+        function toggleAutoUpdate() {
+            if (isAutoUpdating) {
+                clearInterval(autoUpdateInterval);
+                isAutoUpdating = false;
+                document.querySelector('.btn:nth-child(2)').textContent = '⏱️ Auto-actualizar';
+            } else {
+                autoUpdateInterval = setInterval(cargarDatos, 5000); // Cada 5 segundos
+                isAutoUpdating = true;
+                document.querySelector('.btn:nth-child(2)').textContent = '⏹️ Detener auto-actualizar';
+            }
+        }
+
+        // Exportar datos a CSV
+        async function exportarDatos() {
+            try {
+                const response = await fetch('/api/corrientes/ultimas-100');
+                const data = await response.json();
+
+                if (data.success && data.corrientes.length > 0) {
+                    let csv = 'Fecha,Corriente1,Corriente2\n';
+                    data.corrientes.forEach(c => {
+                        const fecha = new Date(c.fecha).toLocaleString('es-AR');
+                        csv += `${fecha},${c.corriente1},${c.corriente2}\n`;
+                    });
+
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `corrientes_${new Date().toISOString().split('T')[0]}.csv`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                }
+            } catch (error) {
+                console.error('Error al exportar:', error);
+                alert('Error al exportar los datos');
+            }
+        }
+
+        // Inicializar aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializarChart();
+            cargarDatos();
+        });
+    </script>
+</body>
+</html>
